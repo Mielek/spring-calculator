@@ -48,15 +48,14 @@ public class ExpressionParser {
     private Expression createSubExpression(Supplier<Expression> nextParser, int... allowedOperations){
         Expression left = nextParser.get();
         while(isNextOperation(allowedOperations)){
-            char lastOperation = (char) lastOperationCharacter;
-            left = createTwoValueExpression(lastOperation, left, nextParser.get());
+            left = createBinaryExpression(lastOperationCharacter, left, nextParser.get());
         }
         return left;
     }
 
     private Expression parseFactor() {
-        if (eat('+')) return parseFactor(); // unary plus
-        if (eat('-')) return NegativeExpression.of(parseFactor()); // unary minus
+        if(isUnaryOperator('+', '-'))
+            return createUnaryExpression(lastOperationCharacter, parseFactor());
 
         Expression x;
         int startPos = this.currentPosition;
@@ -89,8 +88,23 @@ public class ExpressionParser {
         return x;
     }
 
-    private Expression createTwoValueExpression(char tmp, Expression left, Expression right) {
-        switch (tmp) {
+    private boolean isUnaryOperator(int... operations) {
+        return isNextOperation(operations);
+    }
+
+    private Expression createUnaryExpression(int unaryOperator, Expression unary) {
+        switch (unaryOperator){
+            case '+':
+                return unary;
+            case '-':
+                return NegativeExpression.of(unary);
+            default:
+                throw new RuntimeException("Unknown unary operation under char: " + unaryOperator);
+        }
+    }
+
+    private Expression createBinaryExpression(int binaryOperator, Expression left, Expression right) {
+        switch (binaryOperator) {
             case '+':
                 return AdditionExpression.of(left, right);
             case '-':
@@ -100,7 +114,7 @@ public class ExpressionParser {
             case '/':
                 return DivisionExpression.of(left, right);
             default:
-                throw new RuntimeException("Unknown operation under char: " + tmp);
+                throw new RuntimeException("Unknown operation under char: " + binaryOperator);
         }
     }
 
