@@ -2,8 +2,8 @@ package com.mielowski.calculator.operation;
 
 import java.math.BigDecimal;
 
-public class DivisionOperation extends TwoValueOperation {
-    public DivisionOperation(Operation left, Operation right) {
+public class DivisionExpression extends TwoValueExpression {
+    public DivisionExpression(Expression left, Expression right) {
         super(left, right);
     }
 

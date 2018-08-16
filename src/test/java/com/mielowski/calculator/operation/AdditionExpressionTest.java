@@ -8,21 +8,21 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import java.math.BigDecimal;
 
-public class AdditionOperationTest {
+public class AdditionExpressionTest {
 
     @DisplayName("Addiction of values:")
     @ParameterizedTest(name = "{0} + {1} = {3}")
     @CsvSource({
             "1, 1, 2",
             "2, 2, 4",
-            "1.23, 8.77, 10.00",
+            "1.23, 8.77, 10",
             "10, -20, -10",
             "0.5, -1, -0.5"
     })
     public void xAddedToYEqualsZ(BigDecimal x, BigDecimal y, BigDecimal z) {
-        BigDecimal result = new AdditionOperation(ConstantOperation.of(x), ConstantOperation.of(y)).result();
+        BigDecimal result = new AdditionExpression(ConstantExpression.of(x), ConstantExpression.of(y)).result();
 
-        assertThat(result).isEqualTo(z);
+        assertThat(result).isEqualByComparingTo(z);
     }
 
 }

@@ -8,13 +8,13 @@ import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SquareOperationTest {
+public class SquareExpressionTest {
     @DisplayName("Squared values:")
     @ParameterizedTest(name = "sqr({0}) = {1}")
     @CsvSource({"1, 1", "2, 4", "8, 64", "-2, 4", "1.25, 1.5625", "-1.25, 1.5625"})
     public void xSquaredEqualsZ(BigDecimal x, BigDecimal z){
-        BigDecimal result = new SquareOperation(ConstantOperation.of(x)).result();
+        BigDecimal result = new SquareExpression(ConstantExpression.of(x)).result();
 
-        assertThat(result).isEqualTo(z);
+        assertThat(result).isEqualByComparingTo(z);
     }
 }

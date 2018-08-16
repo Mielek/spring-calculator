@@ -2,6 +2,6 @@ package com.mielowski.calculator.operation;
 
 import java.math.BigDecimal;
 
-public interface Operation {
+public interface Expression {
     BigDecimal result();
 }

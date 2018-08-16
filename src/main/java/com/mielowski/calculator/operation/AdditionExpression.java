@@ -2,9 +2,9 @@ package com.mielowski.calculator.operation;
 
 import java.math.BigDecimal;
 
-public class AdditionOperation extends TwoValueOperation {
+public class AdditionExpression extends TwoValueExpression {
 
-    public AdditionOperation(Operation left, Operation right) {
+    public AdditionExpression(Expression left, Expression right) {
         super(left, right);
     }
 

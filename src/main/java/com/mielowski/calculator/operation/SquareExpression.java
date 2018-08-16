@@ -2,12 +2,10 @@ package com.mielowski.calculator.operation;
 
 import java.math.BigDecimal;
 
-public class SquareOperation implements Operation {
+public class SquareExpression extends OneValueExpression {
 
-    Operation child;
-
-    public SquareOperation(Operation child) {
-        this.child = child;
+    public SquareExpression(Expression child) {
+        super(child);
     }
 
     @Override

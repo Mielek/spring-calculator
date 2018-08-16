@@ -8,13 +8,13 @@ import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MultiplyOperationTest {
+public class MultiplyExpressionTest {
     @DisplayName("Multiply values:")
     @ParameterizedTest(name = "{0} * {1} = {2}")
-    @CsvSource({"1, 1, 1", "1, 2, 2", "2, 2, 4", "23, 32, 736", "-1, 55, -55", "4.0, 0.5, 2.00"})
+    @CsvSource({"1, 1, 1", "1, 2, 2", "2, 2, 4", "23, 32, 736", "-1, 55, -55", "4, 0.5, 2"})
     public void xMultipliedByYEqualsZ(BigDecimal x, BigDecimal y, BigDecimal z){
-        BigDecimal result = new MultiplyOperation(ConstantOperation.of(x), ConstantOperation.of(y)).result();
+        BigDecimal result = new MultiplyExpression(ConstantExpression.of(x), ConstantExpression.of(y)).result();
 
-        assertThat(result).isEqualTo(z);
+        assertThat(result).isEqualByComparingTo(z);
     }
 }

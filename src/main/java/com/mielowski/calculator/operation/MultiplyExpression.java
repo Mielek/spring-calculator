@@ -2,8 +2,8 @@ package com.mielowski.calculator.operation;
 
 import java.math.BigDecimal;
 
-public class MultiplyOperation extends TwoValueOperation {
-    public MultiplyOperation(Operation left, Operation right) {
+public class MultiplyExpression extends TwoValueExpression {
+    public MultiplyExpression(Expression left, Expression right) {
         super(left, right);
     }
 
