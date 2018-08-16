@@ -6,6 +6,10 @@ import java.math.BigDecimal;
 
 public class SquareRootExpression extends OneValueExpression {
 
+    public static Expression of(Expression child) {
+        return new SquareRootExpression(child);
+    }
+
     public SquareRootExpression(Expression child) {
         super(child);
     }
