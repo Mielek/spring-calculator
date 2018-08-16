@@ -16,20 +16,8 @@ public class ExpressionParser {
         this.expression = expression;
     }
 
-    void nextChar() {
-        currentCharacter = (++currentPosition < expression.length()) ? expression.charAt(currentPosition) : -1;
-    }
 
-    boolean eat(int charToEat) {
-        while (currentCharacter == ' ') nextChar();
-        if (currentCharacter == charToEat) {
-            nextChar();
-            return true;
-        }
-        return false;
-    }
-
-    Expression parse() {
+    public Expression parse() {
         nextChar();
         Expression x = parseExpression();
         if (currentPosition < expression.length()) throw new RuntimeException("Unexpected: " + (char) currentCharacter);
@@ -42,7 +30,7 @@ public class ExpressionParser {
     // factor = `+` factor | `-` factor | `(` expression `)`
     //        | number | functionName factor | factor `^` factor
 
-    Expression parseExpression() {
+    private Expression parseExpression() {
         Expression x = parseTerm();
         for (;;) {
             if      (eat('+')) x = AdditionExpression.of(x, parseTerm()); // addition
@@ -51,7 +39,7 @@ public class ExpressionParser {
         }
     }
 
-    Expression parseTerm() {
+    private Expression parseTerm() {
         Expression x = parseFactor();
         for (;;) {
             if      (eat('*')) x = MultiplyExpression.of(x, parseFactor()); // multiplication
@@ -60,7 +48,7 @@ public class ExpressionParser {
         }
     }
 
-    Expression parseFactor() {
+    private Expression parseFactor() {
         if (eat('+')) return parseFactor(); // unary plus
         if (eat('-')) return NegativeExpression.of(parseFactor()); // unary minus
 
@@ -84,16 +72,24 @@ public class ExpressionParser {
             x = parseFactor();
             if (func.equals("sqrt")) x = SquareExpression.of(x);
             else if(func.equals("root")) x = SquareRootExpression.of(x);
-            //else if (func.equals("sin")) x = Math.sin(Math.toRadians(x));
-            //else if (func.equals("cos")) x = Math.cos(Math.toRadians(x));
-            //else if (func.equals("tan")) x = Math.tan(Math.toRadians(x));
             else throw new RuntimeException("Unknown function: " + func);
         } else {
             throw new RuntimeException("Unexpected: " + (char) currentCharacter);
         }
 
-        //if (eat('^')) x = Math.pow(x, parseFactor()); // exponentiation
-
         return x;
+    }
+
+    private void nextChar() {
+        currentCharacter = (++currentPosition < expression.length()) ? expression.charAt(currentPosition) : -1;
+    }
+
+    private boolean eat(int charToEat) {
+        while (currentCharacter == ' ') nextChar();
+        if (currentCharacter == charToEat) {
+            nextChar();
+            return true;
+        }
+        return false;
     }
 }
