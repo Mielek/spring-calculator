@@ -89,7 +89,7 @@ public class ExpressionParser {
     }
 
     private Expression parseConstantFactor() {
-        StringBuilder builder = new StringBuilder((char)currentCharacter);
+        StringBuilder builder = new StringBuilder();
         while (isNumberCharacter((char) currentCharacter)){
             builder.append((char)currentCharacter);
             nextChar();
