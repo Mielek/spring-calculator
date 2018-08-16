@@ -20,7 +20,7 @@ public class AdditionOperationTest {
             "0.5, -1, -0.5"
     })
     public void xAddedToYEqualsZ(BigDecimal x, BigDecimal y, BigDecimal z) {
-        BigDecimal result = new AdditionOperation(ValueOperation.of(x), ValueOperation.of(y)).result();
+        BigDecimal result = new AdditionOperation(ConstantOperation.of(x), ConstantOperation.of(y)).result();
 
         assertThat(result).isEqualTo(z);
     }

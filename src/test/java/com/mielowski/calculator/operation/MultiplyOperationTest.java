@@ -13,7 +13,7 @@ public class MultiplyOperationTest {
     @ParameterizedTest(name = "{0} * {1} = {2}")
     @CsvSource({"1, 1, 1", "1, 2, 2", "2, 2, 4", "23, 32, 736", "-1, 55, -55", "4.0, 0.5, 2.00"})
     public void xMultipliedByYEqualsZ(BigDecimal x, BigDecimal y, BigDecimal z){
-        BigDecimal result = new MultiplyOperation(ValueOperation.of(x), ValueOperation.of(y)).result();
+        BigDecimal result = new MultiplyOperation(ConstantOperation.of(x), ConstantOperation.of(y)).result();
 
         assertThat(result).isEqualTo(z);
     }
