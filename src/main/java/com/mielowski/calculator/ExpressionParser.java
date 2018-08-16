@@ -3,6 +3,7 @@ package com.mielowski.calculator;
 
 import com.mielowski.calculator.expressions.*;
 
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 /**
@@ -37,45 +38,20 @@ public class ExpressionParser {
     //        | number | functionName factor | factor `^` factor
 
     private Expression parseExpression() {
-        Expression x = parseTerm();
-        while (isNextOperation('+', '-')) {
-            x = createTwoValueExpression(x, parseTerm());
-        }
-        return x;
-    }
-
-    private Expression createTwoValueExpression(Expression left, Expression right) {
-        switch (lastOperationCharacter) {
-            case '+':
-                return AdditionExpression.of(left, right);
-            case '-':
-                return SubtractionExpression.of(left, right);
-            default:
-                throw new RuntimeException("Unknown operation under char: " + (char) lastOperationCharacter);
-        }
-    }
-
-    private boolean isNextOperation(int... operations) {
-        skipWhiteCharacters();
-        if (IntStream.of(operations).anyMatch(value -> value == currentCharacter)) {
-            lastOperationCharacter = currentCharacter;
-            nextChar();
-            return true;
-        }
-        return false;
-    }
-
-    private void skipWhiteCharacters() {
-        while (currentCharacter == ' ') nextChar();
+        return createSubExpression(this::parseTerm, '+', '-');
     }
 
     private Expression parseTerm() {
-        Expression x = parseFactor();
-        for (; ; ) {
-            if (eat('*')) x = MultiplyExpression.of(x, parseFactor()); // multiplication
-            else if (eat('/')) x = DivisionExpression.of(x, parseFactor()); // division
-            else return x;
+        return createSubExpression(this::parseFactor, '*', '/');
+    }
+
+    private Expression createSubExpression(Supplier<Expression> nextParser, int... allowedOperations){
+        Expression left = nextParser.get();
+        while(isNextOperation(allowedOperations)){
+            char lastOperation = (char) lastOperationCharacter;
+            left = createTwoValueExpression(lastOperation, left, nextParser.get());
         }
+        return left;
     }
 
     private Expression parseFactor() {
@@ -113,12 +89,41 @@ public class ExpressionParser {
         return x;
     }
 
+    private Expression createTwoValueExpression(char tmp, Expression left, Expression right) {
+        switch (tmp) {
+            case '+':
+                return AdditionExpression.of(left, right);
+            case '-':
+                return SubtractionExpression.of(left, right);
+            case '*':
+                return MultiplyExpression.of(left, right);
+            case '/':
+                return DivisionExpression.of(left, right);
+            default:
+                throw new RuntimeException("Unknown operation under char: " + tmp);
+        }
+    }
+
+    private boolean isNextOperation(int... operations) {
+        skipWhiteCharacters();
+        if (IntStream.of(operations).anyMatch(value -> value == currentCharacter)) {
+            lastOperationCharacter = currentCharacter;
+            nextChar();
+            return true;
+        }
+        return false;
+    }
+
+    private void skipWhiteCharacters() {
+        while (currentCharacter == ' ') nextChar();
+    }
+
     private int nextChar() {
         return currentCharacter = (++currentPosition < expression.length()) ? expression.charAt(currentPosition) : -1;
     }
 
     private boolean eat(int charToEat) {
-        while (currentCharacter == ' ') nextChar();
+        skipWhiteCharacters();
         if (currentCharacter == charToEat) {
             nextChar();
             return true;
