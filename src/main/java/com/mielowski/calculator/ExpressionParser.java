@@ -3,6 +3,8 @@ package com.mielowski.calculator;
 
 import com.mielowski.calculator.expressions.*;
 
+import java.util.function.IntPredicate;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
@@ -45,27 +47,28 @@ public class ExpressionParser {
         return createSubExpression(this::parseFactor, '*', '/');
     }
 
-    private Expression createSubExpression(Supplier<Expression> nextParser, int... allowedOperations){
+    private Expression createSubExpression(Supplier<Expression> nextParser, int... allowedOperations) {
         Expression left = nextParser.get();
-        while(isNextOperation(allowedOperations)){
+        while (isNextOperation(allowedOperations)) {
             left = createBinaryExpression(lastOperationCharacter, left, nextParser.get());
         }
         return left;
     }
 
     private Expression parseFactor() {
-        if(isUnaryOperator('+', '-'))
+        if (isNextOperation('+', '-'))
             return createUnaryExpression(lastOperationCharacter, parseFactor());
 
-        if(isNextParentheses()) {
+        if (isNextParentheses())
             return parseParenthesesFactor();
-        } else if (isNumberCharacter()) { // numbers
-            return parseConstantFactor(this.currentPosition);
-        } else if (isAlphabetCharacter()) { // functions
+
+        if (isNumberCharacter((char) currentCharacter))
+            return parseConstantFactor();
+
+        if (isAlphabetCharacter((char)currentCharacter))
             return parseFunctionFactor(this.currentPosition);
-        } else {
-            throw new RuntimeException("Unexpected: " + (char) currentCharacter);
-        }
+
+        throw new RuntimeException("Unexpected: " + (char) currentCharacter);
     }
 
     private boolean isNextParentheses() {
@@ -77,13 +80,34 @@ public class ExpressionParser {
         char ending = getEndingParentheses();
         x = parseExpression();
         if (!eat(ending))
-            throw new RuntimeException("No ending parenthesis: "+ending);
+            throw new RuntimeException("No ending parenthesis: " + ending);
         return x;
+    }
+
+    private boolean isNumberCharacter(char currentCharacter) {
+        return (currentCharacter >= '0' && currentCharacter <= '9') || currentCharacter == '.';
+    }
+
+    private Expression parseConstantFactor() {
+        StringBuilder builder = new StringBuilder((char)currentCharacter);
+        while (isNumberCharacter((char) currentCharacter)){
+            builder.append((char)currentCharacter);
+            nextChar();
+        }
+        return ConstantExpression.of(Double.parseDouble(builder.toString()));
+    }
+
+    private boolean isAlphabetCharacter(char currentCharacter) {
+        return isCharacterBetweenValues(currentCharacter, 'a', 'z');
+    }
+
+    private boolean isCharacterBetweenValues(char test, char left, char right){
+        return test >= left && test <= right;
     }
 
     private Expression parseFunctionFactor(int startPos) {
         Expression x;
-        while (isAlphabetCharacter()) nextChar();
+        while (isAlphabetCharacter((char)currentCharacter)) nextChar();
         String func = expression.substring(startPos, this.currentPosition);
         x = parseFactor();
         if (func.equals("sqrt")) x = SquareExpression.of(x);
@@ -92,37 +116,21 @@ public class ExpressionParser {
         return x;
     }
 
-    private Expression parseConstantFactor(int startPos) {
-        Expression x;
-        while (isNumberCharacter()) nextChar();
-        x = ConstantExpression.of(Double.parseDouble(expression.substring(startPos, this.currentPosition)));
-        return x;
-    }
-
     private char getEndingParentheses() {
-        switch (lastOperationCharacter){
-            case '(': return ')';
-            case '[': return ']';
-            case '{': return '}';
+        switch (lastOperationCharacter) {
+            case '(':
+                return ')';
+            case '[':
+                return ']';
+            case '{':
+                return '}';
             default:
                 throw new RuntimeException("Unknown ending parentheses: " + lastOperationCharacter);
         }
     }
 
-    private boolean isAlphabetCharacter() {
-        return currentCharacter >= 'a' && currentCharacter <= 'z';
-    }
-
-    private boolean isNumberCharacter() {
-        return (currentCharacter >= '0' && currentCharacter <= '9') || currentCharacter == '.';
-    }
-
-    private boolean isUnaryOperator(int... operations) {
-        return isNextOperation(operations);
-    }
-
     private Expression createUnaryExpression(int unaryOperator, Expression unary) {
-        switch (unaryOperator){
+        switch (unaryOperator) {
             case '+':
                 return unary;
             case '-':
@@ -158,7 +166,11 @@ public class ExpressionParser {
     }
 
     private void skipWhiteCharacters() {
-        while (currentCharacter == ' ') nextChar();
+        skipCharacters(value -> value == ' ');
+    }
+
+    private void skipCharacters(IntPredicate predicate){
+        while (predicate.test(currentCharacter)) nextChar();
     }
 
     private int nextChar() {
