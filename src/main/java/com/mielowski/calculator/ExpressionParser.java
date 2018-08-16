@@ -20,7 +20,8 @@ public class ExpressionParser {
     public Expression parse() {
         nextChar();
         Expression x = parseExpression();
-        if (currentPosition < expression.length()) throw new RuntimeException("Unexpected: " + (char) currentCharacter);
+        if (currentPosition < expression.length())
+            throw new RuntimeException("Unexpected: " + (char) currentCharacter);
         return x;
     }
 

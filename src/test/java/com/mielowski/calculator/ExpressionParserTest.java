@@ -1,15 +1,27 @@
 package com.mielowski.calculator;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class ExpressionParserTest {
 
+    @Test
+    public void parseEmptyString(){
+        ExpressionParser parser = new ExpressionParser("");
+        assertThatThrownBy(parser::parse);
+    }
+
+    @Test
+    public void parseWithWrongCharString(){
+        ExpressionParser parser = new ExpressionParser("1+1+\u03A9+1");
+        assertThatThrownBy(parser::parse);
+    }
 
     @DisplayName("Parse positive constant expressions:")
     @ParameterizedTest
@@ -72,6 +84,24 @@ public class ExpressionParserTest {
     @CsvSource({"(1+1)*(1+1), 4", "2*(2+2*[2+2*{2+2}, 44"})
     public void parseExpressionWithParenthesis(String expression, String result){
         assertParsedExpressionWithResult(expression, result);
+    }
+
+    @Test
+    public void noEndingParenthesis(){
+        ExpressionParser parser = new ExpressionParser("2*(2+2");
+        assertThatThrownBy(parser::parse);
+    }
+
+    @Test
+    public void noStartingParenthesis(){
+        ExpressionParser parser = new ExpressionParser("2*2+2)");
+        assertThatThrownBy(parser::parse);
+    }
+
+    @Test
+    public void wrongExpression(){
+        ExpressionParser parser = new ExpressionParser("2*(2+2)(8+8)");
+        assertThatThrownBy(parser::parse);
     }
 
     private void assertParsedExpressionWithResult(String expression, String result) {
