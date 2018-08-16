@@ -1,4 +1,4 @@
-package com.mielowski.calculator.operation;
+package com.mielowski.calculator.expressions;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,6 @@
-package com.mielowski.calculator.operation;
+package com.mielowski.calculator.expressions;
+
+import com.mielowski.calculator.Expression;
 
 public abstract class OneValueExpression implements Expression {
     protected Expression child;

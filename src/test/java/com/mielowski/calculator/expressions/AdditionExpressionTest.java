@@ -1,4 +1,4 @@
-package com.mielowski.calculator.operation;
+package com.mielowski.calculator.expressions;
 
 import static org.assertj.core.api.Assertions.*;
 
