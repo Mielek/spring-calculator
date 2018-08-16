@@ -8,15 +8,15 @@ import com.mielowski.calculator.expressions.*;
  */
 public class ExpressionParser {
 
-    private String str;
+    private String expression;
     int pos = -1, ch;
 
     public ExpressionParser(String expression) {
-        str = expression;
+        this.expression = expression;
     }
 
     void nextChar() {
-        ch = (++pos < str.length()) ? str.charAt(pos) : -1;
+        ch = (++pos < expression.length()) ? expression.charAt(pos) : -1;
     }
 
     boolean eat(int charToEat) {
@@ -31,7 +31,7 @@ public class ExpressionParser {
     Expression parse() {
         nextChar();
         Expression x = parseExpression();
-        if (pos < str.length()) throw new RuntimeException("Unexpected: " + (char)ch);
+        if (pos < expression.length()) throw new RuntimeException("Unexpected: " + (char)ch);
         return x;
     }
 
@@ -76,10 +76,10 @@ public class ExpressionParser {
             eat('}');
         } else if ((ch >= '0' && ch <= '9') || ch == '.') { // numbers
             while ((ch >= '0' && ch <= '9') || ch == '.') nextChar();
-            x = ConstantExpression.of(Double.parseDouble(str.substring(startPos, this.pos)));
+            x = ConstantExpression.of(Double.parseDouble(expression.substring(startPos, this.pos)));
         } else if (ch >= 'a' && ch <= 'z') { // functions
             while (ch >= 'a' && ch <= 'z') nextChar();
-            String func = str.substring(startPos, this.pos);
+            String func = expression.substring(startPos, this.pos);
             x = parseFactor();
             if (func.equals("sqrt")) x = SquareExpression.of(x);
             else if(func.equals("root")) x = SquareRootExpression.of(x);
