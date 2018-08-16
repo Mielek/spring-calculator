@@ -57,13 +57,16 @@ public class ExpressionParser {
         int startPos = this.currentPosition;
         if (eat('(')) { // parentheses
             x = parseExpression();
-            eat(')');
+            if(!eat(')'))
+                throw new RuntimeException("No ending parenthesis");
         } else if (eat('[')) { // parentheses
             x = parseExpression();
-            eat(']');
+            if(!eat(']'))
+                throw new RuntimeException("No ending parenthesis");
         } else if (eat('{')) { // parentheses
             x = parseExpression();
-            eat('}');
+            if(!eat('}'))
+                throw new RuntimeException("No ending parenthesis");
         } else if ((currentCharacter >= '0' && currentCharacter <= '9') || currentCharacter == '.') { // numbers
             while ((currentCharacter >= '0' && currentCharacter <= '9') || currentCharacter == '.') nextChar();
             x = ConstantExpression.of(Double.parseDouble(expression.substring(startPos, this.currentPosition)));
