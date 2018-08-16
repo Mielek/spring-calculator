@@ -21,21 +21,23 @@ public class ExpressionParser {
         this.expression = expression.trim().toLowerCase();
     }
 
-
     public Expression parse() {
-        if (expression.isEmpty())
-            throw new RuntimeException("Expression is empty");
+        throwIfExpressionIsEmpty();
         nextChar();
         Expression x = parseExpression();
-        if (currentPosition < expression.length())
-            throw new RuntimeException("Unexpected expression ending " + expression.substring(currentPosition));
+        throwIfUnknownEnding();
         return x;
     }
 
-    // Grammar:
-    // expression = term | expression `+` term | expression `-` term
-    // term = factor | term `*` factor | term `/` factor
-    // factor = `+` factor | `-` factor | `(` expression `)` | number | functionName factor | factor `^` factor
+    private void throwIfExpressionIsEmpty() {
+        if (expression.isEmpty())
+            throw new RuntimeException("Expression is empty");
+    }
+
+    private void throwIfUnknownEnding() {
+        if (currentPosition < expression.length())
+            throw new RuntimeException("Unexpected expression ending " + expression.substring(currentPosition));
+    }
 
     private Expression parseExpression() {
         return createSubExpression(this::parseTerm, '+', '-');
@@ -74,9 +76,8 @@ public class ExpressionParser {
     }
 
     private Expression parseParenthesesFactor() {
-        Expression x;
-        char ending = getEndingParentheses();
-        x = parseExpression();
+        char ending = getEndingParentheses(lastOperationCharacter);
+        Expression x = parseExpression();
         if (!eat(ending))
             throw new RuntimeException("No ending parenthesis: " + ending);
         return x;
@@ -117,8 +118,8 @@ public class ExpressionParser {
         return builder.toString();
     }
 
-    private char getEndingParentheses() {
-        switch (lastOperationCharacter) {
+    private char getEndingParentheses(int parenthesis) {
+        switch (parenthesis) {
             case '(':
                 return ')';
             case '[':
@@ -126,7 +127,7 @@ public class ExpressionParser {
             case '{':
                 return '}';
             default:
-                throw new RuntimeException("Unknown ending parentheses: " + lastOperationCharacter);
+                throw new RuntimeException("Unknown ending parentheses: " + parenthesis);
         }
     }
 
