@@ -9,19 +9,20 @@ import com.mielowski.calculator.expressions.*;
 public class ExpressionParser {
 
     private String expression;
-    int pos = -1, ch;
+    private int currentPosition = -1;
+    private int currentCharacter;
 
     public ExpressionParser(String expression) {
         this.expression = expression;
     }
 
     void nextChar() {
-        ch = (++pos < expression.length()) ? expression.charAt(pos) : -1;
+        currentCharacter = (++currentPosition < expression.length()) ? expression.charAt(currentPosition) : -1;
     }
 
     boolean eat(int charToEat) {
-        while (ch == ' ') nextChar();
-        if (ch == charToEat) {
+        while (currentCharacter == ' ') nextChar();
+        if (currentCharacter == charToEat) {
             nextChar();
             return true;
         }
@@ -31,7 +32,7 @@ public class ExpressionParser {
     Expression parse() {
         nextChar();
         Expression x = parseExpression();
-        if (pos < expression.length()) throw new RuntimeException("Unexpected: " + (char)ch);
+        if (currentPosition < expression.length()) throw new RuntimeException("Unexpected: " + (char) currentCharacter);
         return x;
     }
 
@@ -64,7 +65,7 @@ public class ExpressionParser {
         if (eat('-')) return NegativeExpression.of(parseFactor()); // unary minus
 
         Expression x;
-        int startPos = this.pos;
+        int startPos = this.currentPosition;
         if (eat('(')) { // parentheses
             x = parseExpression();
             eat(')');
@@ -74,12 +75,12 @@ public class ExpressionParser {
         } else if (eat('{')) { // parentheses
             x = parseExpression();
             eat('}');
-        } else if ((ch >= '0' && ch <= '9') || ch == '.') { // numbers
-            while ((ch >= '0' && ch <= '9') || ch == '.') nextChar();
-            x = ConstantExpression.of(Double.parseDouble(expression.substring(startPos, this.pos)));
-        } else if (ch >= 'a' && ch <= 'z') { // functions
-            while (ch >= 'a' && ch <= 'z') nextChar();
-            String func = expression.substring(startPos, this.pos);
+        } else if ((currentCharacter >= '0' && currentCharacter <= '9') || currentCharacter == '.') { // numbers
+            while ((currentCharacter >= '0' && currentCharacter <= '9') || currentCharacter == '.') nextChar();
+            x = ConstantExpression.of(Double.parseDouble(expression.substring(startPos, this.currentPosition)));
+        } else if (currentCharacter >= 'a' && currentCharacter <= 'z') { // functions
+            while (currentCharacter >= 'a' && currentCharacter <= 'z') nextChar();
+            String func = expression.substring(startPos, this.currentPosition);
             x = parseFactor();
             if (func.equals("sqrt")) x = SquareExpression.of(x);
             else if(func.equals("root")) x = SquareRootExpression.of(x);
@@ -88,7 +89,7 @@ public class ExpressionParser {
             //else if (func.equals("tan")) x = Math.tan(Math.toRadians(x));
             else throw new RuntimeException("Unknown function: " + func);
         } else {
-            throw new RuntimeException("Unexpected: " + (char)ch);
+            throw new RuntimeException("Unexpected: " + (char) currentCharacter);
         }
 
         //if (eat('^')) x = Math.pow(x, parseFactor()); // exponentiation
