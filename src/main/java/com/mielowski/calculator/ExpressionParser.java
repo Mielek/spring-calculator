@@ -4,7 +4,6 @@ package com.mielowski.calculator;
 import com.mielowski.calculator.expressions.*;
 
 import java.util.function.IntPredicate;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
@@ -36,8 +35,7 @@ public class ExpressionParser {
     // Grammar:
     // expression = term | expression `+` term | expression `-` term
     // term = factor | term `*` factor | term `/` factor
-    // factor = `+` factor | `-` factor | `(` expression `)`
-    //        | number | functionName factor | factor `^` factor
+    // factor = `+` factor | `-` factor | `(` expression `)` | number | functionName factor | factor `^` factor
 
     private Expression parseExpression() {
         return createSubExpression(this::parseTerm, '+', '-');
@@ -65,8 +63,8 @@ public class ExpressionParser {
         if (isNumberCharacter((char) currentCharacter))
             return parseConstantFactor();
 
-        if (isAlphabetCharacter((char)currentCharacter))
-            return parseFunctionFactor(this.currentPosition);
+        if (isAlphabetCharacter((char) currentCharacter))
+            return parseFunctionFactor();
 
         throw new RuntimeException("Unexpected: " + (char) currentCharacter);
     }
@@ -84,36 +82,39 @@ public class ExpressionParser {
         return x;
     }
 
-    private boolean isNumberCharacter(char currentCharacter) {
-        return (currentCharacter >= '0' && currentCharacter <= '9') || currentCharacter == '.';
+    private boolean isNumberCharacter(int currentCharacter) {
+        return isCharacterBetweenValues(currentCharacter, '0', '9') || currentCharacter == '.';
     }
 
     private Expression parseConstantFactor() {
-        StringBuilder builder = new StringBuilder();
-        while (isNumberCharacter((char) currentCharacter)){
-            builder.append((char)currentCharacter);
-            nextChar();
-        }
-        return ConstantExpression.of(Double.parseDouble(builder.toString()));
+        String number = buildValue(this::isNumberCharacter);
+        return ConstantExpression.of(Double.parseDouble(number));
     }
 
-    private boolean isAlphabetCharacter(char currentCharacter) {
+    private boolean isAlphabetCharacter(int currentCharacter) {
         return isCharacterBetweenValues(currentCharacter, 'a', 'z');
     }
 
-    private boolean isCharacterBetweenValues(char test, char left, char right){
+    private boolean isCharacterBetweenValues(int test, int left, int right) {
         return test >= left && test <= right;
     }
 
-    private Expression parseFunctionFactor(int startPos) {
-        Expression x;
-        while (isAlphabetCharacter((char)currentCharacter)) nextChar();
-        String func = expression.substring(startPos, this.currentPosition);
-        x = parseFactor();
+    private Expression parseFunctionFactor() {
+        String func = buildValue(this::isAlphabetCharacter);
+        Expression x = parseFactor();
         if (func.equals("sqrt")) x = SquareExpression.of(x);
         else if (func.equals("root")) x = SquareRootExpression.of(x);
         else throw new RuntimeException("Unknown function: " + func);
         return x;
+    }
+
+    private String buildValue(IntPredicate predicate){
+        StringBuilder builder = new StringBuilder();
+        while (predicate.test(currentCharacter)) {
+            builder.append((char) currentCharacter);
+            nextChar();
+        }
+        return builder.toString();
     }
 
     private char getEndingParentheses() {
@@ -169,7 +170,7 @@ public class ExpressionParser {
         skipCharacters(value -> value == ' ');
     }
 
-    private void skipCharacters(IntPredicate predicate){
+    private void skipCharacters(IntPredicate predicate) {
         while (predicate.test(currentCharacter)) nextChar();
     }
 
