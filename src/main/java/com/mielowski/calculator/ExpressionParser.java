@@ -57,35 +57,64 @@ public class ExpressionParser {
         if(isUnaryOperator('+', '-'))
             return createUnaryExpression(lastOperationCharacter, parseFactor());
 
-        Expression x;
-        int startPos = this.currentPosition;
-        if (eat('(')) { // parentheses
-            x = parseExpression();
-            if (!eat(')'))
-                throw new RuntimeException("No ending parenthesis");
-        } else if (eat('[')) { // parentheses
-            x = parseExpression();
-            if (!eat(']'))
-                throw new RuntimeException("No ending parenthesis");
-        } else if (eat('{')) { // parentheses
-            x = parseExpression();
-            if (!eat('}'))
-                throw new RuntimeException("No ending parenthesis");
-        } else if ((currentCharacter >= '0' && currentCharacter <= '9') || currentCharacter == '.') { // numbers
-            while ((currentCharacter >= '0' && currentCharacter <= '9') || currentCharacter == '.') nextChar();
-            x = ConstantExpression.of(Double.parseDouble(expression.substring(startPos, this.currentPosition)));
-        } else if (currentCharacter >= 'a' && currentCharacter <= 'z') { // functions
-            while (currentCharacter >= 'a' && currentCharacter <= 'z') nextChar();
-            String func = expression.substring(startPos, this.currentPosition);
-            x = parseFactor();
-            if (func.equals("sqrt")) x = SquareExpression.of(x);
-            else if (func.equals("root")) x = SquareRootExpression.of(x);
-            else throw new RuntimeException("Unknown function: " + func);
+        if(isNextParentheses()) {
+            return parseParenthesesFactor();
+        } else if (isNumberCharacter()) { // numbers
+            return parseConstantFactor(this.currentPosition);
+        } else if (isAlphabetCharacter()) { // functions
+            return parseFunctionFactor(this.currentPosition);
         } else {
             throw new RuntimeException("Unexpected: " + (char) currentCharacter);
         }
+    }
 
+    private boolean isNextParentheses() {
+        return isNextOperation('(', '[', '{');
+    }
+
+    private Expression parseParenthesesFactor() {
+        Expression x;
+        char ending = getEndingParentheses();
+        x = parseExpression();
+        if (!eat(ending))
+            throw new RuntimeException("No ending parenthesis: "+ending);
         return x;
+    }
+
+    private Expression parseFunctionFactor(int startPos) {
+        Expression x;
+        while (isAlphabetCharacter()) nextChar();
+        String func = expression.substring(startPos, this.currentPosition);
+        x = parseFactor();
+        if (func.equals("sqrt")) x = SquareExpression.of(x);
+        else if (func.equals("root")) x = SquareRootExpression.of(x);
+        else throw new RuntimeException("Unknown function: " + func);
+        return x;
+    }
+
+    private Expression parseConstantFactor(int startPos) {
+        Expression x;
+        while (isNumberCharacter()) nextChar();
+        x = ConstantExpression.of(Double.parseDouble(expression.substring(startPos, this.currentPosition)));
+        return x;
+    }
+
+    private char getEndingParentheses() {
+        switch (lastOperationCharacter){
+            case '(': return ')';
+            case '[': return ']';
+            case '{': return '}';
+            default:
+                throw new RuntimeException("Unknown ending parentheses: " + lastOperationCharacter);
+        }
+    }
+
+    private boolean isAlphabetCharacter() {
+        return currentCharacter >= 'a' && currentCharacter <= 'z';
+    }
+
+    private boolean isNumberCharacter() {
+        return (currentCharacter >= '0' && currentCharacter <= '9') || currentCharacter == '.';
     }
 
     private boolean isUnaryOperator(int... operations) {
