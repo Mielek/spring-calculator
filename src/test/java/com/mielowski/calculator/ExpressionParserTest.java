@@ -93,6 +93,13 @@ public class ExpressionParserTest {
         assertParsedExpressionWithResult(expression, result);
     }
 
+    @DisplayName("Parse expression with spaces:")
+    @ParameterizedTest(name = "[{index}] {0} = {1}")
+    @CsvSource({"1+1         *1+  1, 3", "  2   *2+   2*2 +2*2+2    , 14", "1+1*2+  1*2+1*2, 7", "2*2*2*2    +1+1+1+1, 20"})
+    public void parseExpressionWithSpaces(String expression, String result){
+        assertParsedExpressionWithResult(expression, result);
+    }
+
     @Test
     public void noEndingParenthesis(){
         ExpressionParser parser = new ExpressionParser("2*(2+2");

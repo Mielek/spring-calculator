@@ -12,13 +12,20 @@ import java.util.stream.IntStream;
  */
 public class ExpressionParser {
 
+    private BinaryExpressionFactory binaryFactory = BinaryExpressionFactory.create();
+    private UnaryExpressionFactory unaryFactory = UnaryExpressionFactory.create();
+
     private String expression;
     private int currentPosition = -1;
     private int currentCharacter;
     private int lastOperationCharacter;
 
     public ExpressionParser(String expression) {
-        this.expression = expression.trim().toLowerCase();
+        this.expression = prepare(expression);
+    }
+
+    private String prepare(String expression) {
+        return expression.trim().replace(" ", "").toLowerCase();
     }
 
     public Expression parse() {
@@ -40,11 +47,11 @@ public class ExpressionParser {
     }
 
     private Expression parseExpression() {
-        return createSubExpression(this::parseTerm, '+', '-');
+        return createSubExpression(this::parseTerm, BinaryExpressionFactory.getAdditiveOperators());
     }
 
     private Expression parseTerm() {
-        return createSubExpression(this::parseFactor, '*', '/');
+        return createSubExpression(this::parseFactor, BinaryExpressionFactory.getMultiplicationOperators());
     }
 
     private Expression createSubExpression(Supplier<Expression> nextParser, int... allowedOperations) {
@@ -56,7 +63,7 @@ public class ExpressionParser {
     }
 
     private Expression parseFactor() {
-        if (isNextOperation('+', '-'))
+        if (isUnaryOperation())
             return createUnaryExpression(lastOperationCharacter, parseFactor());
 
         if (isNextParentheses())
@@ -69,6 +76,10 @@ public class ExpressionParser {
             return parseFunctionFactor();
 
         throw new RuntimeException("Unexpected: " + (char) currentCharacter);
+    }
+
+    private boolean isUnaryOperation() {
+        return isNextOperation(UnaryExpressionFactory.getUnaryOperators());
     }
 
     private boolean isNextParentheses() {
@@ -132,33 +143,14 @@ public class ExpressionParser {
     }
 
     private Expression createUnaryExpression(int unaryOperator, Expression unary) {
-        switch (unaryOperator) {
-            case '+':
-                return unary;
-            case '-':
-                return NegativeExpression.of(unary);
-            default:
-                throw new RuntimeException("Unknown unary operation under char: " + unaryOperator);
-        }
+        return unaryFactory.setChild(unary).build((char) unaryOperator);
     }
 
     private Expression createBinaryExpression(int binaryOperator, Expression left, Expression right) {
-        switch (binaryOperator) {
-            case '+':
-                return AdditionExpression.of(left, right);
-            case '-':
-                return SubtractionExpression.of(left, right);
-            case '*':
-                return MultiplyExpression.of(left, right);
-            case '/':
-                return DivisionExpression.of(left, right);
-            default:
-                throw new RuntimeException("Unknown operation under char: " + binaryOperator);
-        }
+        return binaryFactory.setLeftExpression(left).setRightExpression(right).build((char) binaryOperator);
     }
 
     private boolean isNextOperation(int... operations) {
-        skipWhiteCharacters();
         if (IntStream.of(operations).anyMatch(value -> value == currentCharacter)) {
             lastOperationCharacter = currentCharacter;
             nextChar();
@@ -167,20 +159,11 @@ public class ExpressionParser {
         return false;
     }
 
-    private void skipWhiteCharacters() {
-        skipCharacters(value -> value == ' ');
-    }
-
-    private void skipCharacters(IntPredicate predicate) {
-        while (predicate.test(currentCharacter)) nextChar();
-    }
-
     private int nextChar() {
         return currentCharacter = (++currentPosition < expression.length()) ? expression.charAt(currentPosition) : -1;
     }
 
     private boolean eat(int charToEat) {
-        skipWhiteCharacters();
         if (currentCharacter == charToEat) {
             nextChar();
             return true;
