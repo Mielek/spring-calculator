@@ -12,7 +12,7 @@ public class ExpressionParser {
     private BinaryExpressionFactory multiplicativeFactory = BinaryExpressionFactory.create().setRightExpressionSupplier(this::parseFactor);
     private UnaryExpressionFactory unaryFactory = UnaryExpressionFactory.create().setChildExpressionSupplier(this::parseFactor);
     private FunctionExpressionFactory functionFactory = FunctionExpressionFactory.create().setChildExpressionSupplier(this::parseFactor);
-    private ParenthesisExpressionFactory parenthesisExpressionFactory = ParenthesisExpressionFactory.create().setSubExpressionSuplier(this::parseExpression);
+    private ParenthesisExpressionFactory parenthesisExpressionFactory = ParenthesisExpressionFactory.create().setSubExpressionSupplier(this::parseExpression);
 
     private ExpressionTokenizer tokenizer;
     private Expression result;
@@ -75,7 +75,7 @@ public class ExpressionParser {
         if (tokenizer.isFunctionToken())
             return parseFunctionFactor();
 
-        throw new ExpressionParserException("Unexpected: " + (char) tokenizer.getCurrentToken());
+        throw new ExpressionParserException("Unexpected character: " + (char) tokenizer.getCurrentToken());
     }
 
     private boolean isUnaryOperation() {

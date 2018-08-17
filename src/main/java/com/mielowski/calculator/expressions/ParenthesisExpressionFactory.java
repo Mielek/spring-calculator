@@ -30,7 +30,7 @@ public class ParenthesisExpressionFactory {
         return new ParenthesisExpressionFactory();
     }
 
-    public ParenthesisExpressionFactory setSubExpressionSuplier(Supplier<Expression> subExpressionSupplier) {
+    public ParenthesisExpressionFactory setSubExpressionSupplier(Supplier<Expression> subExpressionSupplier) {
         this.subExpressionSupplier = subExpressionSupplier;
         return this;
     }
