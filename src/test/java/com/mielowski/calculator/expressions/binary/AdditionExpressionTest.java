@@ -1,7 +1,8 @@
-package com.mielowski.calculator.expressions;
+package com.mielowski.calculator.expressions.binary;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.mielowski.calculator.expressions.ValueExpression;
 import com.mielowski.calculator.expressions.binary.AdditionExpression;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;

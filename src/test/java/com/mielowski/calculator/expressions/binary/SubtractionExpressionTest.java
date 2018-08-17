@@ -1,5 +1,6 @@
-package com.mielowski.calculator.expressions;
+package com.mielowski.calculator.expressions.binary;
 
+import com.mielowski.calculator.expressions.ValueExpression;
 import com.mielowski.calculator.expressions.binary.SubtractionExpression;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
