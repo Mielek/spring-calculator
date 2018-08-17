@@ -15,13 +15,21 @@ public class ExpressionParser {
     private BinaryExpressionFactory binaryFactory = BinaryExpressionFactory.create();
     private UnaryExpressionFactory unaryFactory = UnaryExpressionFactory.create();
 
+    private Tokenizer tokenizer;
+
     private String expression;
-    private int currentPosition = -1;
     private int currentCharacter;
     private int lastOperationCharacter;
 
+    private Expression result;
+
     public ExpressionParser(String expression) {
         this.expression = prepare(expression);
+        tokenizer = new Tokenizer(this.expression);
+        throwIfExpressionIsEmpty();
+        nextChar();
+        result = parseExpression();
+        throwIfUnknownEnding();
     }
 
     private String prepare(String expression) {
@@ -29,11 +37,7 @@ public class ExpressionParser {
     }
 
     public Expression parse() {
-        throwIfExpressionIsEmpty();
-        nextChar();
-        Expression x = parseExpression();
-        throwIfUnknownEnding();
-        return x;
+        return result;
     }
 
     private void throwIfExpressionIsEmpty() {
@@ -42,8 +46,8 @@ public class ExpressionParser {
     }
 
     private void throwIfUnknownEnding() {
-        if (currentPosition < expression.length())
-            throw new RuntimeException("Unexpected expression ending " + expression.substring(currentPosition));
+        if (tokenizer.tmp())
+            throw new RuntimeException("Unexpected expression ending " + tokenizer.getUnconsumedString());
     }
 
     private Expression parseExpression() {
@@ -160,7 +164,7 @@ public class ExpressionParser {
     }
 
     private int nextChar() {
-        return currentCharacter = (++currentPosition < expression.length()) ? expression.charAt(currentPosition) : -1;
+        return currentCharacter = tokenizer.nextToken();
     }
 
     private boolean eat(int charToEat) {
@@ -169,5 +173,26 @@ public class ExpressionParser {
             return true;
         }
         return false;
+    }
+
+    class Tokenizer {
+        private String expression;
+        private int currentPosition = -1;
+
+        public Tokenizer(String expression) {
+            this.expression = expression;
+        }
+
+        public boolean tmp(){
+            return currentPosition < expression.length();
+        }
+
+        public int nextToken(){
+            return (++currentPosition < expression.length()) ? expression.charAt(currentPosition) : -1;
+        }
+
+        public String getUnconsumedString() {
+            return expression.substring(currentPosition);
+        }
     }
 }

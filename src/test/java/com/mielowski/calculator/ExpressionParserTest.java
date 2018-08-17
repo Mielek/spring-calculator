@@ -13,14 +13,12 @@ public class ExpressionParserTest {
 
     @Test
     public void parseEmptyString(){
-        ExpressionParser parser = new ExpressionParser("");
-        assertThatThrownBy(parser::parse);
+        assertThatThrownBy(()->new ExpressionParser(""));
     }
 
     @Test
     public void parseWithWrongCharString(){
-        ExpressionParser parser = new ExpressionParser("1+1+\u03A9+1");
-        assertThatThrownBy(parser::parse);
+        assertThatThrownBy(()->new ExpressionParser("1+1+\u03A9+1"));
     }
 
     @DisplayName("Parse positive constant expressions:")
@@ -102,20 +100,17 @@ public class ExpressionParserTest {
 
     @Test
     public void noEndingParenthesis(){
-        ExpressionParser parser = new ExpressionParser("2*(2+2");
-        assertThatThrownBy(parser::parse);
+        assertThatThrownBy(() -> new ExpressionParser("2*(2+2"));
     }
 
     @Test
     public void noStartingParenthesis(){
-        ExpressionParser parser = new ExpressionParser("2*2+2)");
-        assertThatThrownBy(parser::parse);
+        assertThatThrownBy(() -> new ExpressionParser("2*2+2)"));
     }
 
     @Test
     public void wrongExpression(){
-        ExpressionParser parser = new ExpressionParser("2*(2+2)(8+8)");
-        assertThatThrownBy(parser::parse);
+        assertThatThrownBy(() -> new ExpressionParser("2*(2+2)(8+8)"));
     }
 
     private void assertParsedExpressionWithResult(String expression, String result) {
