@@ -79,7 +79,7 @@ public class ExpressionParserTest {
 
     @DisplayName("Parse expression with parenthesis:")
     @ParameterizedTest(name = "[{index}] {0} = {1}")
-    @CsvSource({"(1+1)*(1+1), 4", "2*(2+2*[2+2*{2+2}]), 44", "(((1+1)*2+1)*2+1)*2, 22"})
+    @CsvSource({"({[0]}), 0", "(1+1)*(1+1), 4", "2*(2+2*[2+2*{2+2}]), 44", "(((1+1)*2+1)*2+1)*2, 22"})
     public void parseExpressionWithParenthesis(String expression, String result){
         assertParsedExpressionWithResult(expression, result);
     }
@@ -111,6 +111,11 @@ public class ExpressionParserTest {
     @Test
     public void wrongExpression(){
         assertThatThrownBy(() -> new ExpressionParser("2*(2+2)(8+8)"));
+    }
+
+    @Test
+    public void mixedParenthesis(){
+        assertThatThrownBy(() -> new ExpressionParser("({[0)]}"));
     }
 
     private void assertParsedExpressionWithResult(String expression, String result) {
