@@ -31,7 +31,7 @@ public class UnaryExpressionFactory {
             case '-':
                 return NegativeExpression.of(childExpressionSupplier.get());
             default:
-                throw new RuntimeException("Unknown unary operation under char: " + operator);
+                throw new ExpressionFactoryException("Unknown unary operation under char: " + operator);
         }
     }
 }

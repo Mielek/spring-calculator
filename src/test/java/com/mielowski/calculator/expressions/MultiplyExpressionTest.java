@@ -13,7 +13,7 @@ public class MultiplyExpressionTest {
     @ParameterizedTest(name = "{0} * {1} = {2}")
     @CsvSource({"1, 1, 1", "1, 2, 2", "2, 2, 4", "23, 32, 736", "-1, 55, -55", "4, 0.5, 2"})
     public void xMultipliedByYEqualsZ(BigDecimal x, BigDecimal y, BigDecimal z){
-        BigDecimal result = new MultiplyExpression(ConstantExpression.of(x), ConstantExpression.of(y)).result();
+        BigDecimal result = new MultiplyExpression(ValueExpression.of(x), ValueExpression.of(y)).result();
 
         assertThat(result).isEqualByComparingTo(z);
     }

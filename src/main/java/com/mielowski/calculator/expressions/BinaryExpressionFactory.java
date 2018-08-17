@@ -44,7 +44,7 @@ public class BinaryExpressionFactory {
             case '/':
                 return DivisionExpression.of(leftS.get(), rightS.get());
             default:
-                throw new RuntimeException("Unknown operation under char: " + operator);
+                throw new ExpressionFactoryException("Unknown operation under char: " + operator);
         }
     }
 

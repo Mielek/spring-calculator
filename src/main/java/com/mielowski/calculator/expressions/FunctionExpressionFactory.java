@@ -26,7 +26,7 @@ public class FunctionExpressionFactory {
             case "root":
                 return SquareRootExpression.of(childExpressionSupplier.get());
             default:
-                throw new RuntimeException("Unknown function: " + function);
+                throw new ExpressionFactoryException("Unknown function: " + function);
         }
     }
 

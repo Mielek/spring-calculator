@@ -22,7 +22,7 @@ public class ParenthesisExpressionFactory {
             case '{':
                 return '}';
             default:
-                throw new RuntimeException("Unknown ending parentheses: " + parenthesis);
+                throw new ExpressionFactoryException("Unknown ending parentheses: " + parenthesis);
         }
     }
 
@@ -40,7 +40,7 @@ public class ParenthesisExpressionFactory {
         char ending = ParenthesisExpressionFactory.getEndingParenthesesFor(openParenthesis);
         Expression x = subExpressionSupplier.get();
         if (tokenizer.getCurrentToken() != ending)
-            throw new RuntimeException("No ending parenthesis for " + (char) openParenthesis+ " instead have " + ending);
+            throw new ExpressionFactoryException("No ending parenthesis for " + (char) openParenthesis+ " instead have " + ending);
         tokenizer.nextToken();
         return x;
     }

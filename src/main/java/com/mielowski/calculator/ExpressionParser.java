@@ -30,12 +30,12 @@ public class ExpressionParser {
 
     private void throwIfExpressionIsEmpty() {
         if (!tokenizer.hasNext())
-            throw new RuntimeException("Expression is empty");
+            throw new ExpressionParserException("Expression is empty");
     }
 
     private void throwIfUnknownEnding() {
         if (tokenizer.hasNext())
-            throw new RuntimeException("Unexpected expression ending " + tokenizer.getUnconsumedString());
+            throw new ExpressionParserException("Unexpected expression ending " + tokenizer.getUnconsumedString());
     }
 
     private Expression parseExpression() {
@@ -70,12 +70,12 @@ public class ExpressionParser {
             return parseParenthesesFactor();
 
         if (tokenizer.isValueToken())
-            return parseConstantFactor();
+            return parseValueFactor();
 
         if (tokenizer.isFunctionToken())
             return parseFunctionFactor();
 
-        throw new RuntimeException("Unexpected: " + (char) tokenizer.getCurrentToken());
+        throw new ExpressionParserException("Unexpected: " + (char) tokenizer.getCurrentToken());
     }
 
     private boolean isUnaryOperation() {
@@ -90,9 +90,9 @@ public class ExpressionParser {
         return parenthesisExpressionFactory.build(tokenizer);
     }
 
-    private Expression parseConstantFactor() {
+    private Expression parseValueFactor() {
         String number = tokenizer.getValue();
-        return ConstantExpression.of(Double.parseDouble(number));
+        return ValueExpression.of(Double.parseDouble(number));
     }
 
     private Expression parseFunctionFactor() {
