@@ -15,9 +15,6 @@ public class ExpressionParser {
     private UnaryExpressionFactory unaryFactory = UnaryExpressionFactory.create();
 
     private ExpressionTokenizer tokenizer;
-
-    private int lastOperationCharacter;
-
     private Expression result;
 
     public ExpressionParser(String expression) {
@@ -51,15 +48,15 @@ public class ExpressionParser {
 
     private Expression createSubExpression(Supplier<Expression> nextParser, int... allowedOperations) {
         Expression left = nextParser.get();
-        while (isNextOperation(allowedOperations)) {
-            left = createBinaryExpression(lastOperationCharacter, left, nextParser.get());
+        while (tokenizer.isCurrentAnOperation(allowedOperations)) {
+            left = createBinaryExpression(tokenizer.returnLastAndMove(), left, nextParser.get());
         }
         return left;
     }
 
     private Expression parseFactor() {
         if (isUnaryOperation())
-            return createUnaryExpression(lastOperationCharacter, parseFactor());
+            return createUnaryExpression(tokenizer.returnLastAndMove(), parseFactor());
 
         if (isNextParentheses())
             return parseParenthesesFactor();
@@ -74,15 +71,15 @@ public class ExpressionParser {
     }
 
     private boolean isUnaryOperation() {
-        return isNextOperation(UnaryExpressionFactory.getUnaryOperators());
+        return tokenizer.isCurrentAnOperation(UnaryExpressionFactory.getUnaryOperators());
     }
 
     private boolean isNextParentheses() {
-        return isNextOperation('(', '[', '{');
+        return tokenizer.isCurrentAnOperation('(', '[', '{');
     }
 
     private Expression parseParenthesesFactor() {
-        char ending = getEndingParentheses(lastOperationCharacter);
+        char ending = getEndingParentheses(tokenizer.returnLastAndMove());
         Expression x = parseExpression();
         if (tokenizer.getCurrentToken() != ending)
             throw new RuntimeException("No ending parenthesis: " + ending);
@@ -124,14 +121,5 @@ public class ExpressionParser {
 
     private Expression createBinaryExpression(int binaryOperator, Expression left, Expression right) {
         return binaryFactory.setLeftExpression(left).setRightExpression(right).build((char) binaryOperator);
-    }
-
-    private boolean isNextOperation(int... operations) {
-        if (IntStream.of(operations).anyMatch(value -> value == tokenizer.getCurrentToken())) {
-            lastOperationCharacter = tokenizer.getCurrentToken();
-            tokenizer.nextToken();
-            return true;
-        }
-        return false;
     }
 }

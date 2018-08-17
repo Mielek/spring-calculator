@@ -65,4 +65,10 @@ public class ExpressionTokenizer {
         }
         return false;
     }
+
+    public int returnLastAndMove() {
+        int last = currentToken;
+        nextToken();
+        return last;
+    }
 }
