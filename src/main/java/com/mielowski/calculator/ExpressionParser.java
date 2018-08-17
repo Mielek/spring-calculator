@@ -3,16 +3,16 @@ package com.mielowski.calculator;
 
 import com.mielowski.calculator.expressions.*;
 
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
-
 /**
  * Based on <a href="https://stackoverflow.com/a/26227947">Thread on StackOverflow</a>
  */
 public class ExpressionParser {
 
-    private BinaryExpressionFactory binaryFactory = BinaryExpressionFactory.create();
-    private UnaryExpressionFactory unaryFactory = UnaryExpressionFactory.create();
+    private BinaryExpressionFactory additiveFactory = BinaryExpressionFactory.create().setRightExpressionSupplier(this::parseTerm);
+    private BinaryExpressionFactory multiplicativeFactory = BinaryExpressionFactory.create().setRightExpressionSupplier(this::parseFactor);
+    private UnaryExpressionFactory unaryFactory = UnaryExpressionFactory.create().setChildExpressionSupplier(this::parseFactor);
+    private FunctionExpressionFactory functionFactory = FunctionExpressionFactory.create().setChildExpressionSupplier(this::parseFactor);
+    private ParenthesisExpressionFactory parenthesisExpressionFactory = ParenthesisExpressionFactory.create().setSubExpressionSuplier(this::parseExpression);
 
     private ExpressionTokenizer tokenizer;
     private Expression result;
@@ -39,24 +39,32 @@ public class ExpressionParser {
     }
 
     private Expression parseExpression() {
-        return createSubExpression(this::parseTerm, BinaryExpressionFactory.getAdditiveOperators());
-    }
-
-    private Expression parseTerm() {
-        return createSubExpression(this::parseFactor, BinaryExpressionFactory.getMultiplicationOperators());
-    }
-
-    private Expression createSubExpression(Supplier<Expression> nextParser, int... allowedOperations) {
-        Expression left = nextParser.get();
-        while (tokenizer.isCurrentAnOperation(allowedOperations)) {
-            left = createBinaryExpression(tokenizer.returnLastAndMove(), left, nextParser.get());
+        Expression left = parseTerm();
+        while (isAdditiveOperation()) {
+            left = additiveFactory.setLeftExpression(left).build((char) tokenizer.returnLastAndMove());
         }
         return left;
     }
 
+    private boolean isAdditiveOperation() {
+        return tokenizer.isCurrentAnOperation(BinaryExpressionFactory.getAdditiveOperators());
+    }
+
+    private Expression parseTerm() {
+        Expression left = parseFactor();
+        while (isMultiplicationOperation()) {
+            left = multiplicativeFactory.setLeftExpression(left).build((char) tokenizer.returnLastAndMove());
+        }
+        return left;
+    }
+
+    private boolean isMultiplicationOperation() {
+        return tokenizer.isCurrentAnOperation(BinaryExpressionFactory.getMultiplicationOperators());
+    }
+
     private Expression parseFactor() {
         if (isUnaryOperation())
-            return createUnaryExpression(tokenizer.returnLastAndMove(), parseFactor());
+            return createUnaryExpression();
 
         if (isNextParentheses())
             return parseParenthesesFactor();
@@ -75,18 +83,12 @@ public class ExpressionParser {
     }
 
     private boolean isNextParentheses() {
-        return tokenizer.isCurrentAnOperation('(', '[', '{');
+        return tokenizer.isCurrentAnOperation(ParenthesisExpressionFactory.getStartingParentheses());
     }
 
     private Expression parseParenthesesFactor() {
-        char ending = getEndingParentheses(tokenizer.returnLastAndMove());
-        Expression x = parseExpression();
-        if (tokenizer.getCurrentToken() != ending)
-            throw new RuntimeException("No ending parenthesis: " + ending);
-        tokenizer.nextToken();
-        return x;
+        return parenthesisExpressionFactory.build(tokenizer);
     }
-
 
     private Expression parseConstantFactor() {
         String number = tokenizer.getValue();
@@ -94,32 +96,10 @@ public class ExpressionParser {
     }
 
     private Expression parseFunctionFactor() {
-        String func = tokenizer.getFunction();
-        Expression x = parseFactor();
-        if (func.equals("sqrt")) x = SquareExpression.of(x);
-        else if (func.equals("root")) x = SquareRootExpression.of(x);
-        else throw new RuntimeException("Unknown function: " + func);
-        return x;
+        return functionFactory.build(tokenizer);
     }
 
-    private char getEndingParentheses(int parenthesis) {
-        switch (parenthesis) {
-            case '(':
-                return ')';
-            case '[':
-                return ']';
-            case '{':
-                return '}';
-            default:
-                throw new RuntimeException("Unknown ending parentheses: " + parenthesis);
-        }
-    }
-
-    private Expression createUnaryExpression(int unaryOperator, Expression unary) {
-        return unaryFactory.setChild(unary).build((char) unaryOperator);
-    }
-
-    private Expression createBinaryExpression(int binaryOperator, Expression left, Expression right) {
-        return binaryFactory.setLeftExpression(left).setRightExpression(right).build((char) binaryOperator);
+    private Expression createUnaryExpression() {
+        return unaryFactory.build(tokenizer);
     }
 }

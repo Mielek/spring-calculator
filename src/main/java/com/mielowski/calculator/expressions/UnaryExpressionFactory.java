@@ -1,10 +1,13 @@
 package com.mielowski.calculator.expressions;
 
 import com.mielowski.calculator.Expression;
+import com.mielowski.calculator.ExpressionTokenizer;
+
+import java.util.function.Supplier;
 
 public class UnaryExpressionFactory {
 
-    private Expression child;
+    private Supplier<Expression> childExpressionSupplier;
 
     public static UnaryExpressionFactory create() {
         return new UnaryExpressionFactory();
@@ -14,17 +17,19 @@ public class UnaryExpressionFactory {
         return new int[] {'+', '-'};
     }
 
-    public UnaryExpressionFactory setChild(Expression child) {
-        this.child = child;
+
+    public UnaryExpressionFactory setChildExpressionSupplier(Supplier<Expression> childExpressionSupplier) {
+        this.childExpressionSupplier = childExpressionSupplier;
         return this;
     }
 
-    public Expression build(char operator){
+    public Expression build(ExpressionTokenizer tokenizer){
+        char operator = (char) tokenizer.returnLastAndMove();
         switch (operator) {
             case '+':
-                return child;
+                return childExpressionSupplier.get();
             case '-':
-                return NegativeExpression.of(child);
+                return NegativeExpression.of(childExpressionSupplier.get());
             default:
                 throw new RuntimeException("Unknown unary operation under char: " + operator);
         }

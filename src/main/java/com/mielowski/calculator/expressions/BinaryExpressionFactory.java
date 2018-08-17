@@ -2,35 +2,47 @@ package com.mielowski.calculator.expressions;
 
 import com.mielowski.calculator.Expression;
 
+import java.util.function.Supplier;
+
 public class BinaryExpressionFactory {
 
-    private Expression left;
-    private Expression right;
+    private Supplier<Expression> leftS;
+    private Supplier<Expression> rightS;
 
     public static BinaryExpressionFactory create(){
         return new BinaryExpressionFactory();
     }
 
     public BinaryExpressionFactory setLeftExpression(Expression left){
-        this.left = left;
+        this.leftS = () -> left;
         return this;
     }
 
     public BinaryExpressionFactory setRightExpression(Expression right){
-        this.right = right;
+        this.rightS = () -> right;
+        return this;
+    }
+
+    public BinaryExpressionFactory setLeftExpressionSupplier(Supplier<Expression> leftS) {
+        this.leftS = leftS;
+        return this;
+    }
+
+    public BinaryExpressionFactory setRightExpressionSupplier(Supplier<Expression> rightS) {
+        this.rightS = rightS;
         return this;
     }
 
     public Expression build(char operator){
         switch (operator) {
             case '+':
-                return AdditionExpression.of(left, right);
+                return AdditionExpression.of(leftS.get(), rightS.get());
             case '-':
-                return SubtractionExpression.of(left, right);
+                return SubtractionExpression.of(leftS.get(), rightS.get());
             case '*':
-                return MultiplyExpression.of(left, right);
+                return MultiplyExpression.of(leftS.get(), rightS.get());
             case '/':
-                return DivisionExpression.of(left, right);
+                return DivisionExpression.of(leftS.get(), rightS.get());
             default:
                 throw new RuntimeException("Unknown operation under char: " + operator);
         }
