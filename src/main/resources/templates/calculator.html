@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<h1>Form</h1>
+<p>
+<form id="evaluate" action="/calculator" method="post">
+    Expression: <input type="text" name="expression"/>
+    <input type="submit" value="Evaluate"/>
+</form>
+
+<div id="result"></div>
+</p>
+<p>
+<form id="history" action="/calculator/history" method="get">
+    <input type="submit" value="Get History"/>
+</form>
+
+<div id="history_list"></div>
+</p>
+</body>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
+<script src="http://malsup.github.com/jquery.form.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#evaluate').ajaxForm({
+            target: '#result',
+            success: function () {
+                $('#result').fadeIn('slow');
+            }
+        });
+        $('#history').ajaxForm({
+            target: '#history_list',
+            beforeSubmit: function () {
+                $('#history_list').innerText = "";
+            },
+            success: function () {
+                $('#history_list').fadeIn('slow');
+            }
+        });
+    });
+</script>
+
+</html>
