@@ -1,6 +1,7 @@
 package com.mielowski.calculator.expressions;
 
 import com.mielowski.calculator.Expression;
+import com.mielowski.calculator.ExpressionTokenizer;
 
 import java.util.function.Supplier;
 
@@ -33,7 +34,8 @@ public class BinaryExpressionFactory {
         return this;
     }
 
-    public Expression build(char operator){
+    public Expression build(ExpressionTokenizer tokenizer){
+        char operator = tokenizer.returnLastAndMove();
         switch (operator) {
             case '+':
                 return AdditionExpression.of(leftS.get(), rightS.get());

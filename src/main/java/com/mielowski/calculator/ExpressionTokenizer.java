@@ -6,7 +6,7 @@ import java.util.stream.IntStream;
 public class ExpressionTokenizer {
     private String expression;
     private int currentPosition = -1;
-    private int currentToken;
+    private char currentToken;
 
     public ExpressionTokenizer(String expression) {
         this.expression = expression.trim().replace(" ", "").toLowerCase();
@@ -18,10 +18,10 @@ public class ExpressionTokenizer {
     }
 
     public void nextToken() {
-        currentToken = (++currentPosition < expression.length()) ? expression.charAt(currentPosition) : -1;
+        currentToken = (char)((++currentPosition < expression.length()) ? expression.charAt(currentPosition) : -1);
     }
 
-    public int getCurrentToken() {
+    public char getCurrentToken() {
         return currentToken;
     }
 
@@ -66,8 +66,8 @@ public class ExpressionTokenizer {
         return false;
     }
 
-    public int returnLastAndMove() {
-        int last = currentToken;
+    public char returnLastAndMove() {
+        char last = currentToken;
         nextToken();
         return last;
     }

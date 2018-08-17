@@ -14,23 +14,24 @@ public class ExpressionParser {
     private FunctionExpressionFactory functionFactory = FunctionExpressionFactory.create().setChildExpressionSupplier(this::parseFactor);
     private ParenthesisExpressionFactory parenthesisExpressionFactory = ParenthesisExpressionFactory.create().setSubExpressionSupplier(this::parseExpression);
 
+    private String expression;
     private ExpressionTokenizer tokenizer;
-    private Expression result;
 
     public ExpressionParser(String expression) {
-        tokenizer = new ExpressionTokenizer(expression);
-        throwIfExpressionIsEmpty();
-        result = parseExpression();
-        throwIfUnknownEnding();
+        this.expression = expression;
     }
 
     public Expression parse() {
+        tokenizer = new ExpressionTokenizer(expression);
+        throwIfExpressionIsEmpty();
+        Expression result = parseExpression();
+        throwIfUnknownEnding();
         return result;
     }
 
     private void throwIfExpressionIsEmpty() {
         if (!tokenizer.hasNext())
-            throw new ExpressionParserException("Expression is empty");
+            throw new ExpressionParserException("Data is empty");
     }
 
     private void throwIfUnknownEnding() {
@@ -41,7 +42,7 @@ public class ExpressionParser {
     private Expression parseExpression() {
         Expression left = parseTerm();
         while (isAdditiveOperation()) {
-            left = additiveFactory.setLeftExpression(left).build((char) tokenizer.returnLastAndMove());
+            left = additiveFactory.setLeftExpression(left).build(tokenizer);
         }
         return left;
     }
@@ -53,7 +54,7 @@ public class ExpressionParser {
     private Expression parseTerm() {
         Expression left = parseFactor();
         while (isMultiplicationOperation()) {
-            left = multiplicativeFactory.setLeftExpression(left).build((char) tokenizer.returnLastAndMove());
+            left = multiplicativeFactory.setLeftExpression(left).build(tokenizer);
         }
         return left;
     }
@@ -75,7 +76,7 @@ public class ExpressionParser {
         if (tokenizer.isFunctionToken())
             return parseFunctionFactor();
 
-        throw new ExpressionParserException("Unexpected character: " + (char) tokenizer.getCurrentToken());
+        throw new ExpressionParserException("Unexpected character: " + tokenizer.getCurrentToken());
     }
 
     private boolean isUnaryOperation() {

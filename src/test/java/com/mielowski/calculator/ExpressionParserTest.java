@@ -1,5 +1,6 @@
 package com.mielowski.calculator;
 
+import com.mielowski.calculator.expressions.ExpressionFactoryException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,16 +11,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.assertj.core.api.Assertions.*;
 
 public class ExpressionParserTest {
-
-    @Test
-    public void parseEmptyString(){
-        assertThatThrownBy(()->new ExpressionParser(""));
-    }
-
-    @Test
-    public void parseWithWrongCharString(){
-        assertThatThrownBy(()->new ExpressionParser("1+1+\u03A9+1"));
-    }
 
     @DisplayName("Parse positive constant expressions:")
     @ParameterizedTest
@@ -99,23 +90,33 @@ public class ExpressionParserTest {
     }
 
     @Test
+    public void parseEmptyString(){
+        assertThatThrownBy(()->new ExpressionParser("").parse()).isExactlyInstanceOf(ExpressionParserException.class);
+    }
+
+    @Test
+    public void parseWithWrongCharString(){
+        assertThatThrownBy(()->new ExpressionParser("1+1+\u03A9+1").parse()).isExactlyInstanceOf(ExpressionParserException.class);
+    }
+
+    @Test
     public void noEndingParenthesis(){
-        assertThatThrownBy(() -> new ExpressionParser("2*(2+2"));
+        assertThatThrownBy(() -> new ExpressionParser("2*(2+2").parse()).isExactlyInstanceOf(ExpressionFactoryException.class);
     }
 
     @Test
     public void noStartingParenthesis(){
-        assertThatThrownBy(() -> new ExpressionParser("2*2+2)"));
+        assertThatThrownBy(() -> new ExpressionParser("2*2+2)").parse()).isExactlyInstanceOf(ExpressionParserException.class);
     }
 
     @Test
     public void wrongExpression(){
-        assertThatThrownBy(() -> new ExpressionParser("2*(2+2)(8+8)"));
+        assertThatThrownBy(() -> new ExpressionParser("2*(2+2)(8+8)").parse()).isExactlyInstanceOf(ExpressionParserException.class);
     }
 
     @Test
     public void mixedParenthesis(){
-        assertThatThrownBy(() -> new ExpressionParser("({[0)]}"));
+        assertThatThrownBy(() -> new ExpressionParser("({[0)]}").parse()).isExactlyInstanceOf(ExpressionFactoryException.class);
     }
 
     private void assertParsedExpressionWithResult(String expression, String result) {

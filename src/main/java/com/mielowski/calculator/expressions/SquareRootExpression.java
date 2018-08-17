@@ -4,7 +4,7 @@ import com.mielowski.calculator.Expression;
 
 import java.math.BigDecimal;
 
-public class SquareRootExpression extends OneValueExpression {
+public class SquareRootExpression extends UnaryExpression {
 
     public static Expression of(Expression child) {
         return new SquareRootExpression(child);
@@ -38,5 +38,10 @@ public class SquareRootExpression extends OneValueExpression {
     private static BigDecimal sqrRoot(BigDecimal value){
         BigDecimal x = BigDecimal.valueOf(Math.sqrt(value.doubleValue()));
         return x.add(BigDecimal.valueOf(value.subtract(x.multiply(x)).doubleValue() / (x.doubleValue() * 2.0)));
+    }
+
+    @Override
+    public String toString() {
+        return "root"+child.toString();
     }
 }

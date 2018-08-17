@@ -4,7 +4,7 @@ import com.mielowski.calculator.Expression;
 
 import java.math.BigDecimal;
 
-public class SubtractionExpression extends TwoValueExpression {
+public class SubtractionExpression extends BinaryExpression {
 
     public SubtractionExpression(Expression left, Expression right) {
         super(left, right);
@@ -17,5 +17,10 @@ public class SubtractionExpression extends TwoValueExpression {
     @Override
     public BigDecimal result() {
         return left.result().subtract(right.result());
+    }
+
+    @Override
+    public String toString() {
+        return left.toString()+"-"+right.toString();
     }
 }

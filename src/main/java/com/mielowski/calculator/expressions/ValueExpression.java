@@ -24,4 +24,9 @@ public class ValueExpression implements Expression {
     public BigDecimal result() {
         return constant;
     }
+
+    @Override
+    public String toString() {
+        return constant.toPlainString();
+    }
 }
