@@ -1,6 +1,7 @@
 package com.mielowski.calculator;
 
 import com.mielowski.calculator.expressions.ExpressionFactoryException;
+import com.mielowski.calculator.expressions.ExpressionParserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

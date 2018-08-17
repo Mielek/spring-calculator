@@ -1,7 +1,8 @@
 package com.mielowski.calculator.expressions;
 
 import com.mielowski.calculator.Expression;
-import com.mielowski.calculator.ExpressionTokenizer;
+import com.mielowski.calculator.expressions.unary.SquareExpression;
+import com.mielowski.calculator.expressions.unary.SquareRootExpression;
 
 import java.util.function.Supplier;
 

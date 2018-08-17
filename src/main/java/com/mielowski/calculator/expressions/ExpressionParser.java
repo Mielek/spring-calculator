@@ -1,7 +1,7 @@
-package com.mielowski.calculator;
+package com.mielowski.calculator.expressions;
 
 
-import com.mielowski.calculator.expressions.*;
+import com.mielowski.calculator.Expression;
 
 /**
  * Based on <a href="https://stackoverflow.com/a/26227947">Thread on StackOverflow</a>

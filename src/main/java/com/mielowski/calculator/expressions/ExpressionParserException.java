@@ -1,4 +1,4 @@
-package com.mielowski.calculator;
+package com.mielowski.calculator.expressions;
 
 public class ExpressionParserException extends RuntimeException {
     public ExpressionParserException() {

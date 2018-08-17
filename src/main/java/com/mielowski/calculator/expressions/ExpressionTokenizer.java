@@ -1,4 +1,4 @@
-package com.mielowski.calculator;
+package com.mielowski.calculator.expressions;
 
 import java.util.function.BooleanSupplier;
 import java.util.stream.IntStream;

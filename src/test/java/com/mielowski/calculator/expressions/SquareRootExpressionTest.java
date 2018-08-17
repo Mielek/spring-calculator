@@ -1,5 +1,6 @@
 package com.mielowski.calculator.expressions;
 
+import com.mielowski.calculator.expressions.unary.SquareRootExpression;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

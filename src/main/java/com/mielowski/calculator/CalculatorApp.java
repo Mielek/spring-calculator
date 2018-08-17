@@ -1,5 +1,6 @@
 package com.mielowski.calculator;
 
+import com.mielowski.calculator.expressions.ExpressionParser;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

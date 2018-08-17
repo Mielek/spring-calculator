@@ -1,7 +1,10 @@
 package com.mielowski.calculator.expressions;
 
 import com.mielowski.calculator.Expression;
-import com.mielowski.calculator.ExpressionTokenizer;
+import com.mielowski.calculator.expressions.binary.AdditionExpression;
+import com.mielowski.calculator.expressions.binary.DivisionExpression;
+import com.mielowski.calculator.expressions.binary.MultiplyExpression;
+import com.mielowski.calculator.expressions.binary.SubtractionExpression;
 
 import java.util.function.Supplier;
 

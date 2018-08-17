@@ -1,4 +1,4 @@
-package com.mielowski.calculator.expressions;
+package com.mielowski.calculator.expressions.binary;
 
 import com.mielowski.calculator.Expression;
 

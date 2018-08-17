@@ -1,6 +1,7 @@
-package com.mielowski.calculator.expressions;
+package com.mielowski.calculator.expressions.unary;
 
 import com.mielowski.calculator.Expression;
+import com.mielowski.calculator.expressions.unary.UnaryExpression;
 
 import java.math.BigDecimal;
 

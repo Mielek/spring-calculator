@@ -1,5 +1,6 @@
 package com.mielowski.calculator.expressions;
 
+import com.mielowski.calculator.expressions.binary.DivisionExpression;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
