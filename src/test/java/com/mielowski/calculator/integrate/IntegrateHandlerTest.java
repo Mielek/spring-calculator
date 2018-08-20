@@ -18,7 +18,8 @@ public class IntegrateHandlerTest {
             "0, 1, 1.71828182, 1, 50",
             "1, 0, -1.71828182, 8, 50",
             "0.5, 1, 1.06956, 4, 4",
-            "0, 0.5, 0.648721, 40, 1"
+            "0, 0.5, 0.648721, 40, 1",
+            "-1, 1, 2.350402, 4, 100"
     })
     public void integrate(double start, double end, double expected, int threads, int splits){
         IntegrateCommand command = createCommand(start, end, threads, splits);

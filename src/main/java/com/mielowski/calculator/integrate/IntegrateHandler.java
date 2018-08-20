@@ -39,7 +39,7 @@ public class IntegrateHandler implements CommandHandler<IntegrateCommand, Double
 
     private List<IntegrateJob> createSplit(IntegrateCommand command) {
         List<IntegrateJob> integralJobs = new ArrayList<>();
-        double splitRage = (Math.abs(command.getEndRange()) - Math.abs(command.getStartRange())) / command.getSplits();
+        double splitRage = (command.getEndRange() - command.getStartRange()) / command.getSplits();
         double start = command.getStartRange();
         for(int i =0; i<command.getSplits(); ++i){
             double end = start + splitRage;

@@ -15,7 +15,8 @@ public class IntegrateJobTest {
             "0, 1, 1.71828182",
             "1, 0, -1.71828182",
             "0.5, 1, 1.06956",
-            "0, 0.5, 0.648721"
+            "0, 0.5, 0.648721",
+            "-1, 1, 2.350402"
     })
     public void integrateFromXToYEqualsZ(Double x, Double y, Double z){
         Double result = new IntegrateJob(x, y).call();
