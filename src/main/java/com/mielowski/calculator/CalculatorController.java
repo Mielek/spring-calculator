@@ -6,6 +6,7 @@ import com.mielowski.calculator.expression.ExpressionCommand;
 import com.mielowski.calculator.expression.ExpressionFactoryException;
 import com.mielowski.calculator.expression.ExpressionParserException;
 import com.mielowski.calculator.integrate.IntegrateCommand;
+import com.mielowski.calculator.integrate.IntegrateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -62,7 +63,7 @@ public class CalculatorController {
         return "evaluate";
     }
 
-    @ExceptionHandler({ExpressionParserException.class, ExpressionFactoryException.class, ArithmeticException.class})
+    @ExceptionHandler({ExpressionParserException.class, ExpressionFactoryException.class, ArithmeticException.class, IntegrateException.class})
     public String handleError(Model model, Exception ex) {
         model.addAttribute("message", ex.getMessage());
         return "error";
