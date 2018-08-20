@@ -19,13 +19,13 @@
 
 <div id="history_list"></div>
 
-<form id="integral" action="/calculator/integral" method="post">
-    <p>&int; e<sup>x</sup> from <input type="text" name="startRange"/> to <input type="text" name="endRange"/></p>
-    <p>Threads: <input type="number" name="threads" value="1" aria-valuemin="1"/></p>
-    <p>Split: <input type="number" name="splits" value="1" aria-valuemin="1"/></p>
+<form id="integrate" action="/calculator/integral" method="post">
+    <p>&int; e<sup>x</sup> from <input type="text" name="startRange" value="0" /> to <input type="text" name="endRange" value="1"/></p>
+    <p>Threads: <input type="number" name="threads" value="1"/></p>
+    <p>Split: <input type="number" name="splits" value="1" /></p>
     <input type="submit" value="Evaluate"/>
 </form>
-<div id="integral_result"></div>
+<div id="integrate_result"></div>
 </p>
 </body>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
@@ -45,10 +45,10 @@
                 $('#history_list').fadeIn('slow');
             }
         });
-        $('#integral').ajaxForm({
-            target: '#integral_result',
+        $('#integrate').ajaxForm({
+            target: '#integrate_result',
             success: function () {
-                $('#integral_result').fadeIn('slow');
+                $('#integrate_result').fadeIn('slow');
             }
         });
     });
