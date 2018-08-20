@@ -27,13 +27,10 @@ public class CalculatorController {
 
     @GetMapping("/calculator")
     public String getCalculator(HttpSession session, Model model) {
-        if(session.getAttribute("expression")==null) {
+        if(session.isNew()) {
             model.addAttribute("expression", new ExpressionCommand());
             model.addAttribute("euler_integral", new IntegrateCommand());
-            model.addAttribute("result", "");
-        } else {
-            model.addAttribute(session.getAttribute("expression"));
-            model.addAttribute("result", session.getAttribute("result"));
+            session.setAttribute("history", new ArrayList<>());
         }
         return "calculator";
     }
@@ -42,10 +39,7 @@ public class CalculatorController {
     public String evalExpression(@ModelAttribute ExpressionCommand command, HttpSession session, Model model){
         Expression expression = gateway.execute(command);
         List<Expression> history = (List<Expression>) session.getAttribute("history");
-        if(history==null)
-            history = new ArrayList<>();
         history.add(expression);
-        session.setAttribute("history", history);
         model.addAttribute("result", expression.result());
         return "evaluate";
     }
