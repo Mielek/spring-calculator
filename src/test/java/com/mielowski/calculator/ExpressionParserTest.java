@@ -1,8 +1,9 @@
 package com.mielowski.calculator;
 
-import com.mielowski.calculator.expressions.ExpressionFactoryException;
-import com.mielowski.calculator.expressions.ExpressionParser;
-import com.mielowski.calculator.expressions.ExpressionParserException;
+import com.mielowski.calculator.core.Expression;
+import com.mielowski.calculator.expression.ExpressionFactoryException;
+import com.mielowski.calculator.expression.ExpressionParser;
+import com.mielowski.calculator.expression.ExpressionParserException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
