@@ -1,4 +1,4 @@
-package com.mielowski.calculator;
+package com.mielowski.calculator.expression;
 
 import com.mielowski.calculator.core.Expression;
 import com.mielowski.calculator.expression.ExpressionFactoryException;
@@ -13,7 +13,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class ExpressionParserTest {
+public class ExpressionHandlerTest {
+
+    private ExpressionHandler handler = new ExpressionHandler();
 
     @DisplayName("Parse positive constant expressions:")
     @ParameterizedTest
@@ -123,10 +125,11 @@ public class ExpressionParserTest {
     }
 
     private void assertParsedExpressionWithResult(String expression, String result) {
-        ExpressionParser parser = new ExpressionParser(expression);
-        Expression parsedExpression = parser.parse();
+        ExpressionCommand command = new ExpressionCommand();
+        command.setExpression(expression);
+        Expression expressionResult = handler.handle(command);
 
-        assertThat(parsedExpression.result()).isEqualByComparingTo(result);
+        assertThat(expressionResult.result()).isEqualByComparingTo(result);
     }
 
 }

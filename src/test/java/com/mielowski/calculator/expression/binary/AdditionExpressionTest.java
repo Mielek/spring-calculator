@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 public class AdditionExpressionTest {
 
     @DisplayName("Addiction of values:")
-    @ParameterizedTest(name = "{0} + {1} = {3}")
+    @ParameterizedTest(name = "{0} + {1} = {2}")
     @CsvSource({
             "1, 1, 2",
             "2, 2, 4",

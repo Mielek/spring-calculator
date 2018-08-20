@@ -5,7 +5,7 @@
 <body>
 <h1>Form</h1>
 <p>
-<form id="evaluate" action="/calculator" method="post">
+<form id="evaluate" action="/calculator/evaluate" method="post">
     Expression: <input type="text" name="expression"/>
     <input type="submit" value="Evaluate"/>
 </form>
@@ -18,6 +18,14 @@
 </form>
 
 <div id="history_list"></div>
+
+<form id="integral" action="/calculator/integral" method="post">
+    <p>&int; e<sup>x</sup> from <input type="text" name="startRange"/> to <input type="text" name="endRange"/></p>
+    <p>Threads: <input type="number" name="threads" value="1" aria-valuemin="1"/></p>
+    <p>Split: <input type="number" name="splits" value="1" aria-valuemin="1"/></p>
+    <input type="submit" value="Evaluate"/>
+</form>
+<div id="integral_result"></div>
 </p>
 </body>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
@@ -33,11 +41,14 @@
         });
         $('#history').ajaxForm({
             target: '#history_list',
-            beforeSubmit: function () {
-                $('#history_list').innerText = "";
-            },
             success: function () {
                 $('#history_list').fadeIn('slow');
+            }
+        });
+        $('#integral').ajaxForm({
+            target: '#integral_result',
+            success: function () {
+                $('#integral_result').fadeIn('slow');
             }
         });
     });

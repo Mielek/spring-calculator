@@ -6,6 +6,6 @@ import com.mielowski.calculator.core.Expression;
 public class ExpressionHandler implements CommandHandler<ExpressionCommand, Expression> {
     @Override
     public Expression handle(ExpressionCommand command) {
-        return new ExpressionParser(command.expression).parse();
+        return new ExpressionParser(command.getExpression()).parse();
     }
 }

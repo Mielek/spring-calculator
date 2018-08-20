@@ -3,7 +3,7 @@ package com.mielowski.calculator.expression;
 import com.mielowski.calculator.core.Command;
 
 public class ExpressionCommand implements Command {
-    public String expression;
+    private String expression;
 
     public String getExpression() {
         return expression;

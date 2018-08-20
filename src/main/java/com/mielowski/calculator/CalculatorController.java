@@ -5,6 +5,7 @@ import com.mielowski.calculator.core.Expression;
 import com.mielowski.calculator.expression.ExpressionCommand;
 import com.mielowski.calculator.expression.ExpressionFactoryException;
 import com.mielowski.calculator.expression.ExpressionParserException;
+import com.mielowski.calculator.integrate.IntegrateCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +28,7 @@ public class CalculatorController {
     public String getCalculator(HttpSession session, Model model) {
         if(session.getAttribute("expression")==null) {
             model.addAttribute("expression", new ExpressionCommand());
+            model.addAttribute("euler_integral", new IntegrateCommand());
             model.addAttribute("result", "");
         } else {
             model.addAttribute(session.getAttribute("expression"));
@@ -35,7 +37,7 @@ public class CalculatorController {
         return "calculator";
     }
 
-    @PostMapping("/calculator")
+    @PostMapping("/calculator/evaluate")
     public String evalExpression(@ModelAttribute ExpressionCommand command, HttpSession session, Model model){
         Expression expression = gateway.execute(command);
         List<Expression> history = (List<Expression>) session.getAttribute("history");
@@ -51,6 +53,13 @@ public class CalculatorController {
     public String getHistory(HttpSession session, Model model){
         model.addAttribute("history", session.getAttribute("history"));
         return "history";
+    }
+
+    @PostMapping("/calculator/integral")
+    public String evalIntegral(@ModelAttribute IntegrateCommand command, HttpSession session, Model model){
+        Double result = gateway.execute(command);
+        model.addAttribute("result", result);
+        return "evaluate";
     }
 
     @ExceptionHandler({ExpressionParserException.class, ExpressionFactoryException.class, ArithmeticException.class})
