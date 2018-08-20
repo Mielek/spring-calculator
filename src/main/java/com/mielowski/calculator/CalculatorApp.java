@@ -1,6 +1,7 @@
-package com.mielowski.calculator.core;
+package com.mielowski.calculator;
 
-import com.mielowski.calculator.expression.ExpressionParser;
+import com.mielowski.calculator.core.CommandGateway;
+import com.mielowski.calculator.core.CommandHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -10,11 +11,6 @@ import java.lang.reflect.ParameterizedType;
 
 @SpringBootApplication
 public class CalculatorApp {
-
-    @Bean
-    public Calculator getCalculator(){
-        return expression -> new ExpressionParser(expression).parse();
-    }
 
     @Bean
     public CommandGateway getCommandGateway(ApplicationContext applicationContext){

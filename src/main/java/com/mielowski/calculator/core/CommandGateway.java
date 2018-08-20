@@ -8,7 +8,7 @@ public class CommandGateway {
     public Map<Class<? extends Command>, CommandHandler> handlersMap = new HashMap<>();
 
     public void registerHandler(Class<? extends Command> command, CommandHandler handler){
-        handlersMap.putIfAbsent(command, handler);
+        handlersMap.put(command, handler);
     }
 
     public <ReturnT> ReturnT execute(Command command){

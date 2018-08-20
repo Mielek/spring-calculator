@@ -1,5 +1,8 @@
-package com.mielowski.calculator.core;
+package com.mielowski.calculator;
 
+import com.mielowski.calculator.core.CommandGateway;
+import com.mielowski.calculator.core.Expression;
+import com.mielowski.calculator.expression.ExpressionCommand;
 import com.mielowski.calculator.expression.ExpressionFactoryException;
 import com.mielowski.calculator.expression.ExpressionParserException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +21,12 @@ import java.util.List;
 public class CalculatorController {
 
     @Autowired
-    private Calculator calculator;
+    private CommandGateway gateway;
 
     @GetMapping("/calculator")
     public String getCalculator(HttpSession session, Model model) {
         if(session.getAttribute("expression")==null) {
-            model.addAttribute("expression", new Data());
+            model.addAttribute("expression", new ExpressionCommand());
             model.addAttribute("result", "");
         } else {
             model.addAttribute(session.getAttribute("expression"));
@@ -35,8 +36,8 @@ public class CalculatorController {
     }
 
     @PostMapping("/calculator")
-    public String evalExpression(@ModelAttribute Data data, HttpSession session, Model model){
-        Expression expression = calculator.evalExpression(data.expression);
+    public String evalExpression(@ModelAttribute ExpressionCommand command, HttpSession session, Model model){
+        Expression expression = gateway.execute(command);
         List<Expression> history = (List<Expression>) session.getAttribute("history");
         if(history==null)
             history = new ArrayList<>();
@@ -53,24 +54,9 @@ public class CalculatorController {
     }
 
     @ExceptionHandler({ExpressionParserException.class, ExpressionFactoryException.class, ArithmeticException.class})
-    public ModelAndView handleError(HttpServletRequest req, Exception ex) {
-        ModelAndView mav = new ModelAndView();
-        mav.addObject("result", ex.getMessage());
-        mav.setViewName("evaluate");
-        return mav;
-    }
-
-
-    static class Data {
-        String expression;
-
-        public String getExpression() {
-            return expression;
-        }
-
-        public void setExpression(String expression) {
-            this.expression = expression;
-        }
+    public String handleError(Model model, Exception ex) {
+        model.addAttribute("message", ex.getMessage());
+        return "error";
     }
 
 }
