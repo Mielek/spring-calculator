@@ -12,6 +12,6 @@ Installation require:
 Run steps:
 ```
 git clone https://github.com/Mielek/spring-calculator.git
-cd text-file-transcoder
+cd spring-calculator
 mvn spring-boot:run
 ```
