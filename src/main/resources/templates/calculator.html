@@ -10,7 +10,7 @@
     <input type="submit" value="Evaluate"/>
 </form>
 
-<div id="result"></div>
+<div id="expression_result"></div>
 </p>
 <p>
 <form id="history" action="/calculator/history" method="get">
@@ -34,9 +34,13 @@
 <script>
     $(document).ready(function () {
         $('#evaluate').ajaxForm({
-            target: '#result',
+            target: '#expression_result',
             success: function () {
-                $('#result').fadeIn('slow');
+                $('#expression_result').fadeIn('slow');
+            },
+            error: function (xhr) {
+                var json = JSON.parse(xhr.responseText);
+                document.getElementById("expression_result").innerHTML = "<p>Error: "+json.error+"</p>";
             }
         });
         $('#history').ajaxForm({
@@ -49,6 +53,10 @@
             target: '#integrate_result',
             success: function () {
                 $('#integrate_result').fadeIn('slow');
+            },
+            error: function (xhr) {
+                var json = JSON.parse(xhr.responseText);
+                document.getElementById("integrate_result").innerHTML = "<p>Error: "+json.error+"</p>";
             }
         });
     });
