@@ -35,6 +35,9 @@
     $(document).ready(function () {
         $('#evaluate').ajaxForm({
             target: '#expression_result',
+            beforeSubmit: function(arr, $form, options) {
+                document.getElementById("expression_result").innerHTML = "<p>Waiting for result</p>";
+            },
             success: function () {
                 $('#expression_result').fadeIn('slow');
             },
@@ -51,6 +54,9 @@
         });
         $('#integrate').ajaxForm({
             target: '#integrate_result',
+            beforeSubmit: function(arr, $form, options) {
+                document.getElementById("integrate_result").innerHTML = "<p>Waiting for result</p>";
+            },
             success: function () {
                 $('#integrate_result').fadeIn('slow');
             },
