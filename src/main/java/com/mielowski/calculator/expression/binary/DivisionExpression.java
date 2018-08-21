@@ -5,7 +5,7 @@ import com.mielowski.calculator.core.Expression;
 import java.math.BigDecimal;
 
 public class DivisionExpression extends BinaryExpression {
-    public static final Character OPERATOR = '/';
+    public static final String OPERATOR = "/";
 
     public DivisionExpression(Expression left, Expression right) {
         super(left, right);

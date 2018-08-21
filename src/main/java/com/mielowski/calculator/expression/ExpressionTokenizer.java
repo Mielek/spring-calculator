@@ -1,71 +1,126 @@
 package com.mielowski.calculator.expression;
 
 import java.util.function.BooleanSupplier;
-import java.util.stream.IntStream;
 
 public class ExpressionTokenizer {
     private String expression;
     private int currentPosition = -1;
-    private char currentToken;
+    private char currentCharacter;
+    private Token token;
 
     ExpressionTokenizer(String expression) {
         this.expression = expression.trim().replace(" ", "").toLowerCase();
+        nextCharacter();
         nextToken();
     }
 
+    public Token getToken() {
+        return token;
+    }
+
+    public Token nextToken(){
+        if(isValueCharacter())
+            token = getValue();
+        else if (isFunctionCharacter())
+            token = getFunction();
+        else if(isEndingCharacter())
+            token = getOperation();
+        else
+            token = new Token("", TokenType.END);
+        return token;
+    }
+
+    private boolean isEndingCharacter() {
+        return currentCharacter != '\0';
+    }
+
+    public Token getTokenAndMove(){
+        Token tmp = token;
+        nextToken();
+        return tmp;
+    }
+
+    private Token getOperation() {
+        Token t = new Token(String.valueOf(currentCharacter), TokenType.OPERATION);
+        nextCharacter();
+        return t;
+    }
+
+    private void nextCharacter() {
+        currentCharacter = ((++currentPosition < expression.length()) ? expression.charAt(currentPosition) : '\0');
+    }
+
+    boolean isEmpty(){
+        return expression.isEmpty();
+    }
+
     boolean hasNext() {
-        return currentPosition < expression.length();
+        return !token.isEnd();
     }
 
-    public void nextToken() {
-        currentToken = (char)((++currentPosition < expression.length()) ? expression.charAt(currentPosition) : -1);
+    private Token getValue() {
+        return new Token(getAllUntil(this::isValueCharacter), TokenType.VALUE);
     }
 
-    public char getCurrentToken() {
-        return currentToken;
-    }
-
-    public String getValue() {
-        return getAllUntil(this::isValueToken);
-    }
-
-
-    public String getFunction() {
-        return getAllUntil(this::isFunctionToken);
+    private Token getFunction() {
+        return new Token(getAllUntil(this::isFunctionCharacter), TokenType.FUNCTION);
     }
 
     private String getAllUntil(BooleanSupplier test) {
         StringBuilder builder = new StringBuilder();
         while (test.getAsBoolean()) {
-            builder.append((char) currentToken);
-            nextToken();
+            builder.append(currentCharacter);
+            nextCharacter();
         }
         return builder.toString();
     }
 
     public String getUnconsumedString() {
-        return expression.substring(currentPosition);
+        return token.getValue() + expression.substring(currentPosition);
     }
 
-    public boolean isFunctionToken() {
-        return isCharacterBetweenValues(currentToken, 'a', 'z');
+    private boolean isFunctionCharacter() {
+        return isCharacterBetweenValues(currentCharacter, 'a', 'z');
     }
 
-    public boolean isValueToken() {
-        return isCharacterBetweenValues(currentToken, '0', '9') || currentToken == '.';
+    private boolean isValueCharacter() {
+        return isCharacterBetweenValues(currentCharacter, '0', '9') || currentCharacter == '.';
     }
 
     private boolean isCharacterBetweenValues(int test, int left, int right) {
         return test >= left && test <= right;
     }
 
-    public boolean isCurrentAnOperation(int... operations) {
-        return IntStream.of(operations).anyMatch(operation -> operation == currentToken);
-    }
 
-    public char getCurrentAndMove() {
-        char last = currentToken;
-        nextToken();
-        return last;
+    private enum TokenType { OPERATION, FUNCTION, VALUE, END }
+
+    public static class Token {
+        String value;
+        TokenType type;
+
+        private Token(String value, TokenType type) {
+            this.value = value;
+            this.type = type;
+        }
+
+        public boolean isOperation(){
+            return TokenType.OPERATION.equals(type);
+        }
+
+        public boolean isFunction(){
+            return TokenType.FUNCTION.equals(type);
+        }
+
+        public boolean isValue(){
+            return TokenType.VALUE.equals(type);
+        }
+
+        public boolean isEnd() {
+            return TokenType.END.equals(type);
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 }

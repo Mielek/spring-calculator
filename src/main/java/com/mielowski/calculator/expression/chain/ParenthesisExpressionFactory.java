@@ -9,16 +9,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ParenthesisExpressionFactory extends UnaryExpressionFactory {
-    private Map<Character, Character> startToEndParenthesis = new HashMap<>();
+    private Map<String, String> startToEndParenthesis = new HashMap<>();
     private ExpressionFactory innerExpression;
 
     public ParenthesisExpressionFactory() {
-        startToEndParenthesis.put('(', ')');
-        startToEndParenthesis.put('{', '}');
-        startToEndParenthesis.put('[', ']');
-        addUnaryFunctionCreator("(", expression -> new ParenthesisExpression(expression, '(', ')'));
-        addUnaryFunctionCreator("{", expression -> new ParenthesisExpression(expression, '{', '}'));
-        addUnaryFunctionCreator("[", expression -> new ParenthesisExpression(expression, '[', ']'));
+        startToEndParenthesis.put("(", ")");
+        startToEndParenthesis.put("{", "}");
+        startToEndParenthesis.put("[", "]");
+        addUnaryFunctionCreator("(", expression -> new ParenthesisExpression(expression, "(", ")"));
+        addUnaryFunctionCreator("{", expression -> new ParenthesisExpression(expression, "{", "}"));
+        addUnaryFunctionCreator("[", expression -> new ParenthesisExpression(expression, "[", "]"));
     }
 
     public void setInnerExpression(ExpressionFactory innerExpression) {
@@ -27,19 +27,21 @@ public class ParenthesisExpressionFactory extends UnaryExpressionFactory {
 
     @Override
     public Expression create(ExpressionTokenizer tokenizer) {
-        char operator = tokenizer.getCurrentToken();
-        if(startToEndParenthesis.containsKey(operator)){
-            Expression expression = getCreator(String.valueOf(tokenizer.getCurrentAndMove())).apply(innerExpression.create(tokenizer));
-            eatEndingParenthesis(tokenizer, operator);
+        ExpressionTokenizer.Token token = tokenizer.getToken();
+        if (token.isOperation() && startToEndParenthesis.containsKey(token.getValue())) {
+            tokenizer.nextToken();
+            Expression expression = getCreator(token.getValue()).apply(innerExpression.create(tokenizer));
+            eatEndingParenthesis(tokenizer, token.getValue());
             return expression;
         }
         return nextInChain.create(tokenizer);
     }
 
-    private void eatEndingParenthesis(ExpressionTokenizer tokenizer, char openParenthesis) {
-        char ending = startToEndParenthesis.get(openParenthesis);
-        if (tokenizer.getCurrentToken() != ending)
-            throw new ExpressionFactoryException("No ending parenthesis for " + openParenthesis+ " instead have " + tokenizer.getCurrentToken());
+    private void eatEndingParenthesis(ExpressionTokenizer tokenizer, String openParenthesis) {
+        String ending = startToEndParenthesis.get(openParenthesis);
+        ExpressionTokenizer.Token token = tokenizer.getToken();
+        if (!token.getValue().equals(ending))
+            throw new ExpressionFactoryException("No ending parenthesis for " + openParenthesis + " instead have " + token.getValue());
         tokenizer.nextToken();
     }
 }

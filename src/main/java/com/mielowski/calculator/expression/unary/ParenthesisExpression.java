@@ -6,11 +6,11 @@ import java.math.BigDecimal;
 
 public class ParenthesisExpression extends UnaryExpression {
 
-    private char openParenthesis;
-    private char closeParenthesis;
+    private String openParenthesis;
+    private String closeParenthesis;
 
 
-    public ParenthesisExpression(Expression child, char openParenthesis, char closeParenthesis) {
+    public ParenthesisExpression(Expression child, String openParenthesis, String closeParenthesis) {
         super(child);
         this.openParenthesis = openParenthesis;
         this.closeParenthesis = closeParenthesis;

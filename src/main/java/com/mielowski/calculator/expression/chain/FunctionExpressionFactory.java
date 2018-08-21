@@ -20,8 +20,9 @@ public class FunctionExpressionFactory extends UnaryExpressionFactory {
 
     @Override
     public Expression create(ExpressionTokenizer tokenizer) {
-        if(tokenizer.isFunctionToken())
-            return getCreator(tokenizer.getFunction()).apply(innerExpression.create(tokenizer));
+        ExpressionTokenizer.Token token = tokenizer.getToken();
+        if(token.isFunction())
+            return getCreator(tokenizer.getTokenAndMove().getValue()).apply(innerExpression.create(tokenizer));
         return nextInChain.create(tokenizer);
     }
 

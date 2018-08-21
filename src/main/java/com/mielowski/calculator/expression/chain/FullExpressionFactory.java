@@ -15,7 +15,7 @@ public class FullExpressionFactory implements ExpressionFactory {
         ParenthesisExpressionFactory parenthesis = new ParenthesisExpressionFactory();
         ValueExpressionFactory value = new ValueExpressionFactory();
         ExpressionFactory error = t -> {
-            throw new ExpressionParserException("Unexpected character: " + t.getCurrentToken());
+            throw new ExpressionParserException("Unexpected character: " + t.getToken());
         };
 
         additive.setNextInChain(multiplicative);

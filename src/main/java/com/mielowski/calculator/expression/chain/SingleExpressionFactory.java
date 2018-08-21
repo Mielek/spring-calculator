@@ -10,14 +10,15 @@ public class SingleExpressionFactory extends UnaryExpressionFactory {
 
     public SingleExpressionFactory() {
         addUnaryFunctionCreator("+", Function.identity());
-        addUnaryFunctionCreator(String.valueOf(NegativeExpression.OPERATOR), NegativeExpression::new);
+        addUnaryFunctionCreator(NegativeExpression.OPERATOR, NegativeExpression::new);
     }
 
     @Override
     public Expression create(ExpressionTokenizer tokenizer) {
-        char operator = tokenizer.getCurrentToken();
-        if(hasRegisteredOperator(String.valueOf(operator)))
-            return getCreator(String.valueOf(tokenizer.getCurrentAndMove())).apply(nextInChain.create(tokenizer));
+        ExpressionTokenizer.Token token = tokenizer.getToken();
+        if(token.isOperation() && hasRegisteredOperator(token.getValue())) {
+            return getCreator(tokenizer.getTokenAndMove().getValue()).apply(nextInChain.create(tokenizer));
+        }
         return nextInChain.create(tokenizer);
     }
 

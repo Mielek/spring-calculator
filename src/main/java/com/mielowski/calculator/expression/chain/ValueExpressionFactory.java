@@ -10,8 +10,11 @@ public class ValueExpressionFactory extends ExpressionFactoryChain {
 
     @Override
     public Expression create(ExpressionTokenizer tokenizer) {
-        if(tokenizer.isValueToken())
-            return new ValueExpression(BigDecimal.valueOf(Double.parseDouble(tokenizer.getValue())));
+        ExpressionTokenizer.Token token = tokenizer.getToken();
+        if(token.isValue()) {
+            tokenizer.nextToken();
+            return new ValueExpression(BigDecimal.valueOf(Double.parseDouble(token.getValue())));
+        }
         return nextInChain.create(tokenizer);
     }
 }
