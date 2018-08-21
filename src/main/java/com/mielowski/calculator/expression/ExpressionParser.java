@@ -4,14 +4,10 @@ package com.mielowski.calculator.expression;
 import com.mielowski.calculator.core.Expression;
 import com.mielowski.calculator.expression.chain.FullExpressionFactory;
 
-/**
- * Based on <a href="https://stackoverflow.com/a/26227947">Thread on StackOverflow</a>
- */
 public class ExpressionParser {
     private String expression;
     private ExpressionTokenizer tokenizer;
-
-    FullExpressionFactory parser = new FullExpressionFactory();
+    private FullExpressionFactory parser = new FullExpressionFactory();
 
     public ExpressionParser(String expression) {
         this.expression = expression;
