@@ -11,20 +11,16 @@ import java.util.function.BiFunction;
 public class BinaryExpressionFactory extends ExpressionFactoryChain {
     private Map<Character, BiFunction<Expression, Expression, Expression>> operatorToCreator = new HashMap<>();
 
-    public BinaryExpressionFactory(ExpressionFactoryChain nextInChain) {
-        super(nextInChain);
-    }
-
     public void addBinaryFunctionCreator(Character operation, BiFunction<Expression, Expression, Expression> creator){
         operatorToCreator.put(operation, creator);
     }
 
     @Override
-    public Expression parse(ExpressionTokenizer tokenizer) {
-        Expression left = nextInChain.parse(tokenizer);
+    public Expression create(ExpressionTokenizer tokenizer) {
+        Expression left = nextInChain.create(tokenizer);
         while (isOperationRegistered(tokenizer)) {
             char operator = tokenizer.getCurrentAndMove();
-            left = getCreator(operator).apply(left, nextInChain.parse(tokenizer));
+            left = getCreator(operator).apply(left, nextInChain.create(tokenizer));
         }
         return left;
     }

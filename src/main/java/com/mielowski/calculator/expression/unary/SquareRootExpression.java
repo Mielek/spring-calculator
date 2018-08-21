@@ -5,6 +5,7 @@ import com.mielowski.calculator.core.Expression;
 import java.math.BigDecimal;
 
 public class SquareRootExpression extends UnaryExpression {
+    public static final String OPERATOR = "root";
 
     public SquareRootExpression(Expression child) {
         super(child);
