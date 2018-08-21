@@ -8,12 +8,12 @@ public class ExpressionTokenizer {
     private int currentPosition = -1;
     private char currentToken;
 
-    public ExpressionTokenizer(String expression) {
+    ExpressionTokenizer(String expression) {
         this.expression = expression.trim().replace(" ", "").toLowerCase();
         nextToken();
     }
 
-    public boolean hasNext() {
+    boolean hasNext() {
         return currentPosition < expression.length();
     }
 
