@@ -8,15 +8,7 @@ public class ValueExpression implements Expression {
 
     private BigDecimal constant;
 
-    public static ValueExpression of(BigDecimal value){
-        return new ValueExpression(value);
-    }
-
-    public static ValueExpression of(Double value){
-        return new ValueExpression(BigDecimal.valueOf(value));
-    }
-
-    private ValueExpression(BigDecimal constant) {
+    public ValueExpression(BigDecimal constant) {
         this.constant = constant;
     }
 

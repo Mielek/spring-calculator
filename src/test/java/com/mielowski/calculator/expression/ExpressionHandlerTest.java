@@ -61,7 +61,7 @@ public class ExpressionHandlerTest {
 
     @DisplayName("Parse square expression:")
     @ParameterizedTest(name = "[{index}] {0} = {1}")
-    @CsvSource({"sqrt(1), 1","sqrt(-1), 1","sqrt(2), 4"})
+    @CsvSource({"sqr(1), 1","sqr(-1), 1","sqr(2), 4"})
     public void parseSquareFunctionExpression(String expression, String result) {
         assertParsedExpressionWithResult(expression, result);
     }

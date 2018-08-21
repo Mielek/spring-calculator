@@ -21,7 +21,7 @@ public class AdditionExpressionTest {
             "0.5, -1, -0.5"
     })
     public void xAddedToYEqualsZ(BigDecimal x, BigDecimal y, BigDecimal z) {
-        BigDecimal result = new AdditionExpression(ValueExpression.of(x), ValueExpression.of(y)).result();
+        BigDecimal result = new AdditionExpression(new ValueExpression(x), new ValueExpression(y)).result();
 
         assertThat(result).isEqualByComparingTo(z);
     }

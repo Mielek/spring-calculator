@@ -1,6 +1,5 @@
 package com.mielowski.calculator.expression;
 
-import java.util.Collection;
 import java.util.function.BooleanSupplier;
 import java.util.stream.IntStream;
 

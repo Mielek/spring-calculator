@@ -3,6 +3,8 @@ package com.mielowski.calculator.expression;
 
 import com.mielowski.calculator.core.Expression;
 
+import java.math.BigDecimal;
+
 /**
  * Based on <a href="https://stackoverflow.com/a/26227947">Thread on StackOverflow</a>
  */
@@ -94,7 +96,7 @@ public class ExpressionParser {
 
     private Expression parseValueFactor() {
         String number = tokenizer.getValue();
-        return ValueExpression.of(Double.parseDouble(number));
+        return new ValueExpression(BigDecimal.valueOf(Double.valueOf(number)));
     }
 
     private Expression parseFunctionFactor() {
