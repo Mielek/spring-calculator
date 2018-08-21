@@ -1,5 +1,6 @@
 package com.mielowski.calculator.expression;
 
+import java.util.Collection;
 import java.util.function.BooleanSupplier;
 import java.util.stream.IntStream;
 
@@ -60,13 +61,14 @@ public class ExpressionTokenizer {
     }
 
     public boolean isCurrentAnOperation(int... operations) {
-        if (IntStream.of(operations).anyMatch(value -> value == currentToken)) {
-            return true;
-        }
-        return false;
+        return IntStream.of(operations).anyMatch(operation -> operation == currentToken);
     }
 
-    public char returnLastAndMove() {
+    public boolean isCurrentAnOperation(Collection<Character> operations){
+        return operations.stream().anyMatch(operation -> operation == currentToken);
+    }
+
+    public char getCurrentAndMove() {
         char last = currentToken;
         nextToken();
         return last;

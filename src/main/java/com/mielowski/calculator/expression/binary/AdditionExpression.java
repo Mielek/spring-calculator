@@ -6,11 +6,7 @@ import java.math.BigDecimal;
 
 public class AdditionExpression extends BinaryExpression {
 
-    public static AdditionExpression of(Expression left, Expression right){
-        return new AdditionExpression(left, right);
-    }
-
-    AdditionExpression(Expression left, Expression right) {
+    public AdditionExpression(Expression left, Expression right) {
         super(left, right);
     }
 

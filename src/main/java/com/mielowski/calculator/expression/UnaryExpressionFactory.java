@@ -24,12 +24,12 @@ public class UnaryExpressionFactory {
     }
 
     public Expression build(ExpressionTokenizer tokenizer){
-        char operator = (char) tokenizer.returnLastAndMove();
+        char operator = (char) tokenizer.getCurrentAndMove();
         switch (operator) {
             case '+':
                 return childExpressionSupplier.get();
             case '-':
-                return NegativeExpression.of(childExpressionSupplier.get());
+                return new NegativeExpression(childExpressionSupplier.get());
             default:
                 throw new ExpressionFactoryException("Unknown unary operation under char: " + operator);
         }

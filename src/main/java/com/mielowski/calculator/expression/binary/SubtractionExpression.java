@@ -10,10 +10,6 @@ public class SubtractionExpression extends BinaryExpression {
         super(left, right);
     }
 
-    public static Expression of(Expression left, Expression right) {
-        return new SubtractionExpression(left, right);
-    }
-
     @Override
     public BigDecimal result() {
         return left.result().subtract(right.result());

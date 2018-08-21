@@ -6,10 +6,6 @@ import java.math.BigDecimal;
 
 public class NegativeExpression extends UnaryExpression {
 
-    public static NegativeExpression of(Expression child){
-        return new NegativeExpression(child);
-    }
-
     public NegativeExpression(Expression child) {
         super(child);
     }

@@ -6,7 +6,6 @@ import com.mielowski.calculator.expression.binary.DivisionExpression;
 import com.mielowski.calculator.expression.binary.MultiplyExpression;
 import com.mielowski.calculator.expression.binary.SubtractionExpression;
 
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class BinaryExpressionFactory {
@@ -39,16 +38,16 @@ public class BinaryExpressionFactory {
     }
 
     public Expression build(ExpressionTokenizer tokenizer){
-        char operator = tokenizer.returnLastAndMove();
+        char operator = tokenizer.getCurrentAndMove();
         switch (operator) {
             case '+':
-                return AdditionExpression.of(leftS.get(), rightS.get());
+                return new AdditionExpression(leftS.get(), rightS.get());
             case '-':
-                return SubtractionExpression.of(leftS.get(), rightS.get());
+                return new SubtractionExpression(leftS.get(), rightS.get());
             case '*':
-                return MultiplyExpression.of(leftS.get(), rightS.get());
+                return new MultiplyExpression(leftS.get(), rightS.get());
             case '/':
-                return DivisionExpression.of(leftS.get(), rightS.get());
+                return new DivisionExpression(leftS.get(), rightS.get());
             default:
                 throw new ExpressionFactoryException("Unknown operation under char: " + operator);
         }

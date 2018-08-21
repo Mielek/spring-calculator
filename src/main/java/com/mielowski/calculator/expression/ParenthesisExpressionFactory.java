@@ -36,13 +36,17 @@ public class ParenthesisExpressionFactory {
     }
 
     public Expression build(ExpressionTokenizer tokenizer){
-        char openParenthesis = tokenizer.returnLastAndMove();
+        char openParenthesis = tokenizer.getCurrentAndMove();
         char ending = ParenthesisExpressionFactory.getEndingParenthesesFor(openParenthesis);
         Expression x = subExpressionSupplier.get();
+        eatEndingParenthesis(tokenizer, openParenthesis, ending);
+        return new ParenthesisExpression(x, openParenthesis, ending);
+    }
+
+    private void eatEndingParenthesis(ExpressionTokenizer tokenizer, char openParenthesis, char ending) {
         if (tokenizer.getCurrentToken() != ending)
             throw new ExpressionFactoryException("No ending parenthesis for " + openParenthesis+ " instead have " + tokenizer.getCurrentToken());
         tokenizer.nextToken();
-        return new ParenthesisExpression(x, openParenthesis, ending);
     }
 
 }
