@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpSession;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,15 +34,17 @@ public class CalculatorController {
     }
 
     private void initializeNewSession(HttpSession session, Model model) {
-        if(session.isNew()) {
+        if (session.isNew()) {
             session.setAttribute("history", new ArrayList<>());
         }
     }
 
     @PostMapping("/calculator/evaluate")
-    public String evalExpression(@ModelAttribute ExpressionCommand command, HttpSession session, Model model){
+    public String evalExpression(@ModelAttribute ExpressionCommand command, HttpSession session, Model model) {
         initializeNewSession(session, model);
+        Instant now = Instant.now();
         Expression expression = gateway.execute(command);
+        model.addAttribute("time", Duration.between(now, Instant.now()));
         List<Expression> history = (List<Expression>) session.getAttribute("history");
         history.add(expression);
         model.addAttribute("result", expression.result());
@@ -48,16 +52,18 @@ public class CalculatorController {
     }
 
     @GetMapping("/calculator/history")
-    public String getHistory(HttpSession session, Model model){
+    public String getHistory(HttpSession session, Model model) {
         initializeNewSession(session, model);
         model.addAttribute("history", session.getAttribute("history"));
         return "history";
     }
 
     @PostMapping("/calculator/integral")
-    public String evalIntegral(@ModelAttribute IntegrateCommand command, HttpSession session, Model model){
+    public String evalIntegral(@ModelAttribute IntegrateCommand command, HttpSession session, Model model) {
         initializeNewSession(session, model);
+        Instant now = Instant.now();
         Double result = gateway.execute(command);
+        model.addAttribute("time", Duration.between(now, Instant.now()));
         model.addAttribute("result", result);
         return "evaluate";
     }
