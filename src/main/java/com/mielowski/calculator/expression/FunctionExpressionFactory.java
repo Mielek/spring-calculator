@@ -22,10 +22,10 @@ public class FunctionExpressionFactory {
     public Expression build(ExpressionTokenizer tokenizer){
         String function = tokenizer.getFunction();
         switch (function){
-            case "sqrt":
-                return SquareExpression.of(childExpressionSupplier.get());
+            case "sqr":
+                return new SquareExpression(childExpressionSupplier.get());
             case "root":
-                return SquareRootExpression.of(childExpressionSupplier.get());
+                return new SquareRootExpression(childExpressionSupplier.get());
             default:
                 throw new ExpressionFactoryException("Unknown function: " + function);
         }

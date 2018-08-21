@@ -5,6 +5,7 @@ import com.mielowski.calculator.core.Expression;
 import java.math.BigDecimal;
 
 public class NegativeExpression extends UnaryExpression {
+    public static final Character OPERATOR = '-';
 
     public NegativeExpression(Expression child) {
         super(child);

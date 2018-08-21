@@ -64,10 +64,6 @@ public class ExpressionTokenizer {
         return IntStream.of(operations).anyMatch(operation -> operation == currentToken);
     }
 
-    public boolean isCurrentAnOperation(Collection<Character> operations){
-        return operations.stream().anyMatch(operation -> operation == currentToken);
-    }
-
     public char getCurrentAndMove() {
         char last = currentToken;
         nextToken();

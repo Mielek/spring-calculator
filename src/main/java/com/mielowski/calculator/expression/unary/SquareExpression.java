@@ -5,6 +5,7 @@ import com.mielowski.calculator.core.Expression;
 import java.math.BigDecimal;
 
 public class SquareExpression extends UnaryExpression {
+    private static final String OPERATOR = "sqr";
 
     public SquareExpression(Expression child) {
         super(child);
@@ -17,6 +18,6 @@ public class SquareExpression extends UnaryExpression {
 
     @Override
     public String toString() {
-        return "sqrt"+child.toString();
+        return "sqr"+child.toString();
     }
 }

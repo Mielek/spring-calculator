@@ -5,6 +5,7 @@ import com.mielowski.calculator.core.Expression;
 import java.math.BigDecimal;
 
 public class SubtractionExpression extends BinaryExpression {
+    public static final Character OPERATOR = '-';
 
     public SubtractionExpression(Expression left, Expression right) {
         super(left, right);
