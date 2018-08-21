@@ -27,16 +27,19 @@ public class CalculatorController {
 
     @GetMapping("/calculator")
     public String getCalculator(HttpSession session, Model model) {
+        initializeNewSession(session, model);
+        return "calculator";
+    }
+
+    private void initializeNewSession(HttpSession session, Model model) {
         if(session.isNew()) {
-            model.addAttribute("expression", new ExpressionCommand());
-            model.addAttribute("euler_integral", new IntegrateCommand());
             session.setAttribute("history", new ArrayList<>());
         }
-        return "calculator";
     }
 
     @PostMapping("/calculator/evaluate")
     public String evalExpression(@ModelAttribute ExpressionCommand command, HttpSession session, Model model){
+        initializeNewSession(session, model);
         Expression expression = gateway.execute(command);
         List<Expression> history = (List<Expression>) session.getAttribute("history");
         history.add(expression);
@@ -46,12 +49,14 @@ public class CalculatorController {
 
     @GetMapping("/calculator/history")
     public String getHistory(HttpSession session, Model model){
+        initializeNewSession(session, model);
         model.addAttribute("history", session.getAttribute("history"));
         return "history";
     }
 
     @PostMapping("/calculator/integral")
     public String evalIntegral(@ModelAttribute IntegrateCommand command, HttpSession session, Model model){
+        initializeNewSession(session, model);
         Double result = gateway.execute(command);
         model.addAttribute("result", result);
         return "evaluate";
