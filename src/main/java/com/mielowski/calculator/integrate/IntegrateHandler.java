@@ -16,20 +16,11 @@ public class IntegrateHandler implements CommandHandler<IntegrateCommand, Double
         checkSplits(command.getSplits());
         ExecutorService executor = getExecutor(command.getThreads());
         RangeGenerator rangeGenerator = new RangeGenerator(command);
-        List<Future<Double>> partials = new ArrayList<>();
-        for (int i = 0; i < command.getThreads(); ++i) {
-            partials.add(executor.submit(new CalculateJob(rangeGenerator)));
-        }
         try {
-            return partials.stream().map(doubleFuture -> {
-                try {
-                    return doubleFuture.get();
-                } catch (Exception e) {
-                    throw new IntegrateException("Job failure", e);
-                }
-            }).reduce(0.0, (left, right) -> left + right);
-        } catch (Exception e) {
-            throw new IntegrateException("Job failure", e);
+            return createCalculationJobs(command, rangeGenerator).stream()
+                    .map(executor::submit)
+                    .map(IntegrateHandler::safeFutureGet)
+                    .reduce(0.0, (left, right) -> left + right);
         } finally {
             executor.shutdown();
         }
@@ -45,6 +36,22 @@ public class IntegrateHandler implements CommandHandler<IntegrateCommand, Double
         return Executors.newFixedThreadPool(threads);
     }
 
+    private static Double safeFutureGet(Future<Double> partial) {
+        try {
+            return partial.get();
+        } catch (Exception e) {
+            throw new IntegrateException("Job failure", e);
+        }
+    }
+
+    private List<CalculateJob> createCalculationJobs(IntegrateCommand command, RangeGenerator rangeGenerator) {
+        List<CalculateJob> partials = new ArrayList<>();
+        for (int i = 0; i < command.getThreads(); ++i) {
+            partials.add(new CalculateJob(rangeGenerator));
+        }
+        return partials;
+    }
+
     private static class Range {
         double start;
         double end;
@@ -52,23 +59,6 @@ public class IntegrateHandler implements CommandHandler<IntegrateCommand, Double
         Range(double start, double end) {
             this.start = start;
             this.end = end;
-        }
-    }
-
-    private static class CalculateJob implements Callable<Double> {
-        RangeGenerator generator;
-
-        CalculateJob(RangeGenerator generator) {
-            this.generator = generator;
-        }
-
-        @Override
-        public Double call() {
-            Range range;
-            double result = 0.0;
-            while ((range = generator.emit()) != null)
-                result += Math.exp(range.end) - Math.exp(range.start);
-            return result;
         }
     }
 
@@ -89,6 +79,23 @@ public class IntegrateHandler implements CommandHandler<IntegrateCommand, Double
                 return new Range(start, start + splitRage);
             }
             return null;
+        }
+    }
+
+    private static class CalculateJob implements Callable<Double> {
+        RangeGenerator generator;
+
+        CalculateJob(RangeGenerator generator) {
+            this.generator = generator;
+        }
+
+        @Override
+        public Double call() {
+            Range range;
+            double result = 0.0;
+            while ((range = generator.emit()) != null)
+                result += Math.exp(range.end) - Math.exp(range.start);
+            return result;
         }
     }
 }
