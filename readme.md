@@ -4,7 +4,7 @@
 
 Installation require:
 - Git
-- Java 8+
+- Java 10
 - JAVA_PATH set to jdk location
 - Maven 3+
 - PATH need to contain maven location
