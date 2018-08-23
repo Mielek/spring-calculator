@@ -6,8 +6,7 @@ import com.mielowski.calculator.expression.ValueExpression;
 
 import java.math.BigDecimal;
 
-public class ValueExpressionFactory extends ExpressionFactoryChain {
-
+class ValueExpressionFactory extends ExpressionFactoryChain {
     @Override
     public Expression create(ExpressionTokenizer tokenizer) {
         ExpressionTokenizer.Token token = tokenizer.getToken();

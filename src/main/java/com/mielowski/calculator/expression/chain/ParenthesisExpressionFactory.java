@@ -12,7 +12,7 @@ public class ParenthesisExpressionFactory extends UnaryExpressionFactory {
     private Map<String, String> startToEndParenthesis = new HashMap<>();
     private ExpressionFactory innerExpression;
 
-    public ParenthesisExpressionFactory() {
+    ParenthesisExpressionFactory() {
         startToEndParenthesis.put("(", ")");
         startToEndParenthesis.put("{", "}");
         startToEndParenthesis.put("[", "]");
@@ -21,7 +21,7 @@ public class ParenthesisExpressionFactory extends UnaryExpressionFactory {
         addUnaryFunctionCreator("[", expression -> new ParenthesisExpression(expression, "[", "]"));
     }
 
-    public void setInnerExpression(ExpressionFactory innerExpression) {
+    void setInnerExpressionFactory(ExpressionFactory innerExpression) {
         this.innerExpression = innerExpression;
     }
 

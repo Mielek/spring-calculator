@@ -5,16 +5,16 @@ import com.mielowski.calculator.expression.ExpressionTokenizer;
 import com.mielowski.calculator.expression.unary.SquareExpression;
 import com.mielowski.calculator.expression.unary.SquareRootExpression;
 
-public class FunctionExpressionFactory extends UnaryExpressionFactory {
+class FunctionExpressionFactory extends UnaryExpressionFactory {
 
     private ExpressionFactory innerExpression;
 
-    public FunctionExpressionFactory() {
+    FunctionExpressionFactory() {
         addUnaryFunctionCreator(SquareExpression.OPERATOR, SquareExpression::new);
         addUnaryFunctionCreator(SquareRootExpression.OPERATOR, SquareRootExpression::new);
     }
 
-    public void setInnerExpression(ExpressionFactory innerExpression) {
+    void setInnerExpressionFactory(ExpressionFactory innerExpression) {
         this.innerExpression = innerExpression;
     }
 

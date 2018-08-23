@@ -1,9 +1,9 @@
 package com.mielowski.calculator.expression.chain;
 
-public abstract class ExpressionFactoryChain implements ExpressionFactory {
+abstract class ExpressionFactoryChain implements ExpressionFactory {
     protected ExpressionFactory nextInChain;
 
-    public void setNextInChain(ExpressionFactory nextInChain) {
+    void setNextFactory(ExpressionFactory nextInChain) {
         this.nextInChain = nextInChain;
     }
 }

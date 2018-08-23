@@ -6,9 +6,9 @@ import com.mielowski.calculator.expression.unary.NegativeExpression;
 
 import java.util.function.Function;
 
-public class SingleExpressionFactory extends UnaryExpressionFactory {
+class SingleExpressionFactory extends UnaryExpressionFactory {
 
-    public SingleExpressionFactory() {
+    SingleExpressionFactory() {
         addUnaryFunctionCreator("+", Function.identity());
         addUnaryFunctionCreator(NegativeExpression.OPERATOR, NegativeExpression::new);
     }

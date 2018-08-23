@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-public class BinaryExpressionFactory extends ExpressionFactoryChain {
+class BinaryExpressionFactory extends ExpressionFactoryChain {
     private Map<String, BiFunction<Expression, Expression, Expression>> operatorToCreator = new HashMap<>();
 
-    public void addBinaryFunctionCreator(String operation, BiFunction<Expression, Expression, Expression> creator){
+    void addBinaryFunctionCreator(String operation, BiFunction<Expression, Expression, Expression> creator) {
         operatorToCreator.put(String.valueOf(operation), creator);
     }
 

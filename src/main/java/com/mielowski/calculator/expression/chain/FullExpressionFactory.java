@@ -18,15 +18,15 @@ public class FullExpressionFactory implements ExpressionFactory {
             throw new ExpressionParserException("Unexpected character: " + t.getToken());
         };
 
-        additive.setNextInChain(multiplicative);
-        multiplicative.setNextInChain(single);
-        single.setNextInChain(parenthesis);
-        parenthesis.setNextInChain(value);
-        value.setNextInChain(function);
-        function.setNextInChain(error);
+        additive.setNextFactory(multiplicative);
+        multiplicative.setNextFactory(single);
+        single.setNextFactory(parenthesis);
+        parenthesis.setNextFactory(value);
+        value.setNextFactory(function);
+        function.setNextFactory(error);
 
-        parenthesis.setInnerExpression(additive);
-        function.setInnerExpression(single);
+        parenthesis.setInnerExpressionFactory(additive);
+        function.setInnerExpressionFactory(single);
 
         chainRoot = additive;
     }
