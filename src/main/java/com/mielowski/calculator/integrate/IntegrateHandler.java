@@ -13,9 +13,9 @@ public class IntegrateHandler implements CommandHandler<IntegrateCommand, Double
         ExecutorService executor = getExecutor(command.getThreads());
         try {
             return executor.submit(() ->
-                    createSplit(command)
+                    createStreamOfRanges(command)
                             .parallel()
-                            .map(range -> Math.exp(range.stop) - Math.exp(range.start))
+                            .map(range -> Math.exp(range.end) - Math.exp(range.start))
                             .reduce(0.0, (left, right) -> left + right))
                     .get();
         } catch (Exception e) {
@@ -32,24 +32,27 @@ public class IntegrateHandler implements CommandHandler<IntegrateCommand, Double
     private ExecutorService getExecutor(int threads) {
         if (threads <= 0) throw new IntegrateException("Threads number must be at least 1");
         return new ForkJoinPool(threads);
-
     }
 
-    private Stream<Range> createSplit(IntegrateCommand command) {
+    private Stream<Range> createStreamOfRanges(IntegrateCommand command) {
+        Stream.Builder<Range> rangeStreamBuilder = Stream.builder();
         double splitRage = (command.getEndRange() - command.getStartRange()) / command.getSplits();
-        return Stream.iterate(
-                new Range(command.getStartRange(), splitRage),
-                range -> range.stop + splitRage < command.getEndRange(),
-                range -> new Range(range.stop, range.stop + splitRage));
+        double start = command.getStartRange();
+        for (int i = 0; i < command.getSplits(); ++i) {
+            Range range = new Range(start, start + splitRage);
+            rangeStreamBuilder.accept(range);
+            start = range.end;
+        }
+        return rangeStreamBuilder.build();
     }
 
     private static class Range {
         double start;
-        double stop;
+        double end;
 
-        public Range(double start, double stop) {
+        public Range(double start, double end) {
             this.start = start;
-            this.stop = stop;
+            this.end = end;
         }
     }
 }
