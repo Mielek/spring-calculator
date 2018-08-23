@@ -2,7 +2,7 @@ package com.mielowski.calculator.expression;
 
 
 import com.mielowski.calculator.core.Expression;
-import com.mielowski.calculator.expression.chain.FullExpressionFactory;
+import com.mielowski.calculator.expression.factory.FullExpressionFactory;
 
 class ExpressionParser {
     private FullExpressionFactory factory = new FullExpressionFactory();
