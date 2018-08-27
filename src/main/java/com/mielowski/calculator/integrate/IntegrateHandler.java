@@ -9,21 +9,28 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class IntegrateHandler implements CommandHandler<IntegrateCommand, Double> {
+
     @Override
     public Double handle(IntegrateCommand command) {
         checkSplits(command.getSplits());
         ExecutorService executor = getExecutor(command.getThreads());
         RangeGenerator rangeGenerator = new RangeGenerator(command);
+        List<CalculateJob> calculationJobs = createCalculationJobs(command, rangeGenerator);
         try {
-            return createCalculationJobs(command, rangeGenerator).stream()
-                    .map(executor::submit)
+            List<Future<Double>> submittedJobs = submitJobsTo(executor, calculationJobs);
+            return submittedJobs.stream()
                     .map(IntegrateHandler::safeFutureGet)
                     .reduce(0.0, (left, right) -> left + right);
         } finally {
             executor.shutdown();
         }
+    }
+
+    private List<Future<Double>> submitJobsTo(ExecutorService executor, List<CalculateJob> calculationJobs) {
+        return calculationJobs.stream().map(executor::submit).collect(Collectors.toList());
     }
 
     private void checkSplits(int splits) {
