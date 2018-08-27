@@ -20,17 +20,14 @@ public class IntegrateHandler implements CommandHandler<IntegrateCommand, Double
         RangeGenerator rangeGenerator = new RangeGenerator(command);
         List<CalculateJob> calculationJobs = createCalculationJobs(command, rangeGenerator);
         try {
-            List<Future<Double>> submittedJobs = submitJobsTo(executor, calculationJobs);
-            return submittedJobs.stream()
+            return calculationJobs.stream()
+                    .map(executor::submit)
+                    .collect(Collectors.toList()).stream() // FIX to submit all jobs
                     .map(IntegrateHandler::safeFutureGet)
                     .reduce(0.0, (left, right) -> left + right);
         } finally {
             executor.shutdown();
         }
-    }
-
-    private List<Future<Double>> submitJobsTo(ExecutorService executor, List<CalculateJob> calculationJobs) {
-        return calculationJobs.stream().map(executor::submit).collect(Collectors.toList());
     }
 
     private void checkSplits(int splits) {
