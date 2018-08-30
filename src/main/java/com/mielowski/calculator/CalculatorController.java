@@ -10,10 +10,7 @@ import com.mielowski.calculator.integrate.IntegrateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.time.Duration;
@@ -22,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@SessionAttributes("history")
 public class CalculatorController {
 
     @Autowired
@@ -29,38 +27,32 @@ public class CalculatorController {
 
     @GetMapping("/calculator")
     public String getCalculator(HttpSession session, Model model) {
-        initializeNewSession(session, model);
         return "calculator";
     }
 
-    private void initializeNewSession(HttpSession session, Model model) {
-        if (session.isNew()) {
-            session.setAttribute("history", new ArrayList<>());
-        }
+    @ModelAttribute
+    private void initializeNewSession(Model model) {
+        if (!model.containsAttribute("history"))
+            model.addAttribute("history", new ArrayList<Expression>());
     }
 
     @PostMapping("/calculator/evaluate")
-    public String evalExpression(@ModelAttribute ExpressionCommand command, HttpSession session, Model model) {
-        initializeNewSession(session, model);
+    public String evalExpression(@ModelAttribute ExpressionCommand command, @SessionAttribute("history") List<Expression> history, Model model) {
         Instant now = Instant.now();
         Expression expression = gateway.execute(command);
         model.addAttribute("time", Duration.between(now, Instant.now()));
-        List<Expression> history = (List<Expression>) session.getAttribute("history");
         history.add(expression);
         model.addAttribute("result", expression.result());
         return "evaluate";
     }
 
     @GetMapping("/calculator/history")
-    public String getHistory(HttpSession session, Model model) {
-        initializeNewSession(session, model);
-        model.addAttribute("history", session.getAttribute("history"));
+    public String getHistory() {
         return "history";
     }
 
     @PostMapping("/calculator/integral")
-    public String evalIntegral(@ModelAttribute IntegrateCommand command, HttpSession session, Model model) {
-        initializeNewSession(session, model);
+    public String evalIntegral(@ModelAttribute IntegrateCommand command, Model model) {
         Instant now = Instant.now();
         Double result = gateway.execute(command);
         model.addAttribute("time", Duration.between(now, Instant.now()));
