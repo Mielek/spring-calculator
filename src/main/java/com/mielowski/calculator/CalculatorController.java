@@ -11,10 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
-import javax.servlet.http.HttpSession;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +24,7 @@ public class CalculatorController {
     private CommandGateway gateway;
 
     @GetMapping("/calculator")
-    public String getCalculator(HttpSession session, Model model) {
+    public String getCalculator() {
         return "calculator";
     }
 
@@ -37,13 +35,14 @@ public class CalculatorController {
     }
 
     @PostMapping("/calculator/evaluate")
-    public String evalExpression(@ModelAttribute ExpressionCommand command, @SessionAttribute("history") List<Expression> history, Model model) {
-        Instant now = Instant.now();
-        Expression expression = gateway.execute(command);
-        model.addAttribute("time", Duration.between(now, Instant.now()));
-        history.add(expression);
-        model.addAttribute("result", expression.result());
-        return "evaluate";
+    public Mono<String> evalExpression(@ModelAttribute ExpressionCommand command, @SessionAttribute("history") List<Expression> history, Model model) {
+        return Mono.just(command)
+                .map(gateway::execute)
+                .cast(Expression.class)
+                .doOnSuccess(history::add)
+                .map(Expression::result)
+                .doOnSuccess(result -> model.addAttribute("result", result))
+                .thenReturn("evaluate");
     }
 
     @GetMapping("/calculator/history")
@@ -52,12 +51,12 @@ public class CalculatorController {
     }
 
     @PostMapping("/calculator/integral")
-    public String evalIntegral(@ModelAttribute IntegrateCommand command, Model model) {
-        Instant now = Instant.now();
-        Double result = gateway.execute(command);
-        model.addAttribute("time", Duration.between(now, Instant.now()));
-        model.addAttribute("result", result);
-        return "evaluate";
+    public Mono<String> evalIntegral(@ModelAttribute IntegrateCommand command, Model model) {
+        return Mono.just(command)
+                .map(gateway::execute)
+                .cast(Double.class)
+                .doOnSuccess(result -> model.addAttribute("result", result))
+                .thenReturn("evaluate");
     }
 
     @ExceptionHandler({ExpressionParserException.class, ExpressionFactoryException.class, ArithmeticException.class, IntegrateException.class})
